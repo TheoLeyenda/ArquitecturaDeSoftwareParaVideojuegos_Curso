@@ -1,8 +1,8 @@
-﻿using Architecture.Service;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using TheoLeyenda.ToolBox.Service;
 
-namespace Architecture
+namespace TheoLeyenda.ToolBox.ServiceProvider
 {
     public sealed class ServiceProvider
     {

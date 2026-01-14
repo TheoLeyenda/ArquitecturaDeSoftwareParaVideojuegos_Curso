@@ -1,21 +1,20 @@
-using Architecture.Updateable;
+using TheoLeyenda.ToolBox.Updateable;
+using TheoLeyenda.ToolBox.EventBus;
+using TheoLeyenda.ToolBox.ServiceProvider;
 
-namespace Architecture
+namespace ZooArchitect.Architecture
 {
     public sealed class Gameplay : IUpdateable
     {
-        private float data;
-        public float Data => data;
+        public EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
 
         public Gameplay()
         {
-            this.data = 0;
+            ServiceProvider.Instance.AddService<EventBus>(new EventBus());
         }
 
+        public void Init() {}
 
-        public void Update(float deltaTime)
-        {
-            data += deltaTime;
-        }
+        public void Update(float deltaTime){}
     }
 }

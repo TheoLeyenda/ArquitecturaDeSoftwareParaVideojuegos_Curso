@@ -1,4 +1,4 @@
-﻿namespace Architecture.Service
+﻿namespace TheoLeyenda.ToolBox.Service
 {
     public interface IService
     {
