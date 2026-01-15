@@ -1,4 +1,4 @@
-﻿namespace TheoLeyenda.ToolBox.Updateable
+﻿namespace ImageCampus.ToolBox.Updateable
 {
     public interface IUpdateable
     {

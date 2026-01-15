@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using TheoLeyenda.ToolBox.Service;
 
-namespace TheoLeyenda.ToolBox.ServiceProvider
+namespace ImageCampus.ToolBox.Services
 {
     public sealed class ServiceProvider
     {
         private static ServiceProvider instance;
-
         public static ServiceProvider Instance
         {
-            get 
+            get
             {
-                if (instance == null) 
+                if (instance == null)
                 {
                     instance = new ServiceProvider();
                 }
                 return instance;
             }
-
             private set => instance = value;
         }
 
@@ -26,33 +23,30 @@ namespace TheoLeyenda.ToolBox.ServiceProvider
 
         private ServiceProvider() { }
 
-        public void AddService<ServiceType>(IService service) where ServiceType : class, IService 
+        public void AddService<ServiceType>(IService service) where ServiceType : class, IService
         {
-            if (!services.ContainsKey(typeof(ServiceType))) 
-            {
+            if (!services.ContainsKey(typeof(ServiceType)))
                 services.Add(typeof(ServiceType), service);
-            }
         }
 
-        public bool RemoveService<ServiceType>() where ServiceType : class, IService 
+        public bool RemoveService<ServiceType>() where ServiceType : class, IService
         {
             if (!services.ContainsKey(typeof(ServiceType)))
                 throw new KeyNotFoundException();
-
             return services.Remove(typeof(ServiceType));
         }
 
-        public bool ContainsService<ServiceType>() where ServiceType : class, IService 
+        public bool ContainsService<ServiceType>() where ServiceType : class, IService
         {
             return services.ContainsKey(typeof(ServiceType));
         }
 
-        public ServiceType GetService<ServiceType>() where ServiceType : class, IService 
+        public ServiceType GetService<ServiceType>() where ServiceType : class, IService
         {
             return services[typeof(ServiceType)] as ServiceType;
         }
 
-        public void ClearAllService() 
+        public void ClearAllServices()
         {
             services.Clear();
         }
@@ -60,13 +54,12 @@ namespace TheoLeyenda.ToolBox.ServiceProvider
         public void ClearAllNonPersistanceServices() 
         {
             List<Type> nonPersistanceServiceTypes = new List<Type>();
-            foreach (KeyValuePair<Type, IService> service in services) 
+            foreach (KeyValuePair<Type, IService> service in services)
             {
-                if (service.Value.IsPersistance)
+                if (!service.Value.IsPersistance)
                     nonPersistanceServiceTypes.Add(service.Key);
             }
-
-            foreach (Type keyToRemove in nonPersistanceServiceTypes) 
+            foreach (Type keyToRemove in nonPersistanceServiceTypes)
             {
                 services.Remove(keyToRemove);
             }

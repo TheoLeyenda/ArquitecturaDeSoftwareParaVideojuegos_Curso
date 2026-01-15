@@ -1,4 +1,4 @@
-﻿namespace TheoLeyenda.ToolBox.Service
+﻿namespace ImageCampus.ToolBox.Services
 {
     public interface IService
     {

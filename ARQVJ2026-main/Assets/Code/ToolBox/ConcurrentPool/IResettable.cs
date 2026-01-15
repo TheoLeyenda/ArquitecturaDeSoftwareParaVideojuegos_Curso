@@ -1,6 +1,6 @@
-﻿namespace TheoLeyenda.ToolBox.Resetteable
+﻿namespace ImageCampus.ToolBox.Pool
 {
-    public interface IRessetteable
+    public interface IResettable
     {
         public void Assign(params object[] parameters);
         public void Reset();

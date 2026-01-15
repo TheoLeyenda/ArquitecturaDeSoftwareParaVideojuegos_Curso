@@ -1,7 +1,8 @@
-using TheoLeyenda.ToolBox.Updateable;
-using TheoLeyenda.ToolBox.EventBus;
-using TheoLeyenda.ToolBox.ServiceProvider;
-using TheoLeyenda.ToolBox.Scheduling;
+
+using ImageCampus.ToolBox.Events;
+using ImageCampus.ToolBox.Services;
+using ImageCampus.ToolBox.Updateable;
+using ImageCampus.ToolBox.Scheduling;
 
 namespace ZooArchitect.Architecture
 {
@@ -9,14 +10,11 @@ namespace ZooArchitect.Architecture
     {
         public EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
         public TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
-
         public Gameplay()
         {
             ServiceProvider.Instance.AddService<EventBus>(new EventBus());
             ServiceProvider.Instance.AddService<TaskScheduler>(new TaskScheduler());
         }
-
-        public void Init() {}
 
         public void Update(float deltaTime)
         {

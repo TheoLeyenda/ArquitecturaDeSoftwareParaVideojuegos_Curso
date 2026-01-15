@@ -1,13 +1,13 @@
-﻿using System;
+﻿using ImageCampus.ToolBox.Services;
+using ImageCampus.ToolBox.Updateable;
+using System;
 using System.Collections.Generic;
-using TheoLeyenda.ToolBox.Updateable;
-using TheoLeyenda.ToolBox.Service;
 
-namespace TheoLeyenda.ToolBox.Scheduling 
+namespace ImageCampus.ToolBox.Scheduling
 {
     public sealed class TaskScheduler : IService, IUpdateable
     {
-        private sealed class ScheduledCall
+        public sealed class ScheduledCall 
         {
             public readonly Action callback;
             public float remainingTime;
@@ -18,34 +18,33 @@ namespace TheoLeyenda.ToolBox.Scheduling
                 this.remainingTime = remainingTime;
             }
         }
+        public bool IsPersistance => false;
 
         private readonly List<ScheduledCall> scheduledCalls;
 
-        public bool IsPersistance => false;
-
-        public TaskScheduler() 
+        public TaskScheduler()
         {
             this.scheduledCalls = new List<ScheduledCall>();
         }
 
-        public void Schedule(Action callback, float remainingTime)
+        public void Schedule(Action callback, float remainingTime) 
         {
             scheduledCalls.Add(new ScheduledCall(callback, remainingTime));
         }
 
-        public void Update(float deltaTime) 
+        public void Update(float deltaTime)
         {
-            for (int i = scheduledCalls.Count - 1; i >= 0; i--) 
+            for (int i = scheduledCalls.Count - 1; i >= 0; i--)
             {
                 ScheduledCall call = scheduledCalls[i];
                 call.remainingTime -= deltaTime;
 
-                if (call.remainingTime <= 0) 
+                if (call.remainingTime <= 0.0f)
                 {
                     scheduledCalls.RemoveAt(i);
                     call.callback.Invoke();
                 }
             }
         }
-    }   
+    }
 }

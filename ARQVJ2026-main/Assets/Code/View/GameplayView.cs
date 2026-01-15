@@ -1,22 +1,31 @@
+using ImageCampus.ToolBox.Scheduling;
+using ImageCampus.ToolBox.Services;
 using UnityEngine;
 using ZooArchitect.Architecture;
+using ZooArchitect.View.Logs;
 
-namespace View
+namespace ZooArchitect.View
 {
     public sealed class GameplayView : MonoBehaviour
     {
-        private Gameplay gameplay;
+        private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
 
+        private Gameplay gameplay;
+        private ConsoleView consoleView;
         void Start()
         {
             gameplay = new Gameplay();
-            gameplay.Init();
-
+            consoleView = new ConsoleView();
         }
 
         void Update()
         {
             gameplay.Update(Time.deltaTime);
+        }
+
+        private void OnDisable()
+        {
+            consoleView.Dispose();
         }
     }
 }
