@@ -13,13 +13,13 @@ namespace ZooArchitect.Architecture
         private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
         private Time Time => ServiceProvider.Instance.GetService<Time>();
 
-
         public Gameplay()
         {
             ServiceProvider.Instance.AddService<EventBus>(new EventBus());
             ServiceProvider.Instance.AddService<TaskScheduler>(new TaskScheduler());
             ServiceProvider.Instance.AddService<Time>(new Time());
             ServiceProvider.Instance.AddService<DayNightCycle>(new DayNightCycle());
+            ServiceProvider.Instance.AddService<Wallet>(new Wallet());
         }
 
         public void Update(float deltaTime)
