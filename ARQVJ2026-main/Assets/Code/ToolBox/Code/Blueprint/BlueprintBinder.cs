@@ -1,7 +1,7 @@
 ﻿using ImageCampus.ToolBox.Services;
 using System;
 using System.Reflection;
-
+using ImageCampus.ToolBox.Cast;
 namespace ImageCampus.ToolBox.Bluprints
 {
     public sealed class BlueprintBinder : IService
@@ -22,7 +22,7 @@ namespace ImageCampus.ToolBox.Bluprints
                     {
                         if (attribute is BlueprintParameterAttribute)
                         {
-                            fieldInfo.SetValue(instance, Convert.ChangeType(
+                            fieldInfo.SetValue(instance, StringCast.Convert(
                                 BlueprintRegistry.BlueprintDatas[blueprintTable]
                                 [blueprintID, (attribute as BlueprintParameterAttribute).ParameterHeader],
                                 fieldInfo.FieldType));

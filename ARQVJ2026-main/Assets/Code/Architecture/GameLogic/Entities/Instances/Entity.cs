@@ -7,7 +7,6 @@ namespace ZooArchitect.Architecture.Entities
     {
         public const uint UNASSIGNED_ENTITY_ID = 0;
 
-        [BlueprintParameter("Food")] private int food;
 
         public uint ID;
         public Coordinate coordinate;
