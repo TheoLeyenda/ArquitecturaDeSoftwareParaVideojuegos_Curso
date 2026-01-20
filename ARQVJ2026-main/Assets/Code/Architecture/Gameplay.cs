@@ -1,4 +1,5 @@
 
+using ImageCampus.ToolBox.Bluprints;
 using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
@@ -15,9 +16,11 @@ namespace ZooArchitect.Architecture
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
         private Time Time => ServiceProvider.Instance.GetService<Time>();
 
-        public Gameplay()
+        public Gameplay(string blueprintsPath)
         {
             ServiceProvider.Instance.AddService<EventBus>(new EventBus());
+            ServiceProvider.Instance.AddService<BlueprintRegistry>(new BlueprintRegistry(blueprintsPath));
+            ServiceProvider.Instance.AddService<BlueprintBinder>(new BlueprintBinder());
             ServiceProvider.Instance.AddService<TaskScheduler>(new TaskScheduler());
             ServiceProvider.Instance.AddService<Time>(new Time());
             ServiceProvider.Instance.AddService<DayNightCycle>(new DayNightCycle());

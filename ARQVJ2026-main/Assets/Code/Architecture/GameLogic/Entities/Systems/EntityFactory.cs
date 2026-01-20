@@ -1,4 +1,5 @@
-﻿using ImageCampus.ToolBox.Events;
+﻿using ImageCampus.ToolBox.Bluprints;
+using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Services;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ namespace ZooArchitect.Architecture.Entities
     {
         private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
         private EntityRegistry EntityRegistry => ServiceProvider.Instance.GetService<EntityRegistry>();
+
+        private BlueprintBinder BlueprintBinder => ServiceProvider.Instance.GetService<BlueprintBinder>();
 
         private uint lastAssignedEntityId;
         public bool IsPersistance => false;
@@ -41,7 +44,9 @@ namespace ZooArchitect.Architecture.Entities
             if (!entityConstructors.ContainsKey(typeof(EntityType)))
                 throw new MissingMethodException($"Missing constructor for {typeof(EntityType).Name}");
 
-            EntityType newEntity = entityConstructors[typeof(EntityType)].Invoke(new object[] { newEntityId, coordinate }) as EntityType;
+            object newEntity = entityConstructors[typeof(EntityType)].Invoke(new object[] { newEntityId, coordinate });
+
+            BlueprintBinder.Apply(ref newEntity, "Animals", "Monkey");
 
             if (registerEntityMethod == null)
                 throw new MissingMethodException($"Missing EntityRegistry register method");

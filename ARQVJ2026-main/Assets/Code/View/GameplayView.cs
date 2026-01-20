@@ -1,5 +1,7 @@
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using ZooArchitect.Architecture;
 using ZooArchitect.View.Logs;
@@ -10,11 +12,13 @@ namespace ZooArchitect.View
     {
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
 
+        private string BluprintsPath => Path.Combine(Application.streamingAssetsPath, "Blueprints", "Blueprints.xlsx");
+        
         private Gameplay gameplay;
         private ConsoleView consoleView;
         void Start()
         {
-            gameplay = new Gameplay();
+            gameplay = new Gameplay(BluprintsPath);
             consoleView = new ConsoleView();
         }
 
@@ -28,5 +32,7 @@ namespace ZooArchitect.View
         {
             consoleView.Dispose();
         }
+
+ 
     }
 }
