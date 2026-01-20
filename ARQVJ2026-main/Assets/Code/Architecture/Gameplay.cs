@@ -1,8 +1,11 @@
 
 using ImageCampus.ToolBox.Events;
+using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
 using ImageCampus.ToolBox.Updateable;
-using ImageCampus.ToolBox.Scheduling;
+using System;
+using ZooArchitect.Architecture.Entities;
+using ZooArchitect.Architecture.Entities.Events;
 using ZooArchitect.Architecture.GameLogic;
 
 namespace ZooArchitect.Architecture
@@ -10,7 +13,6 @@ namespace ZooArchitect.Architecture
     public sealed class Gameplay : IUpdateable
     {
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
-        private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
         private Time Time => ServiceProvider.Instance.GetService<Time>();
 
         public Gameplay()
@@ -20,6 +22,9 @@ namespace ZooArchitect.Architecture
             ServiceProvider.Instance.AddService<Time>(new Time());
             ServiceProvider.Instance.AddService<DayNightCycle>(new DayNightCycle());
             ServiceProvider.Instance.AddService<Wallet>(new Wallet());
+            ServiceProvider.Instance.AddService<EntityRegistry>(new EntityRegistry());
+            ServiceProvider.Instance.AddService<EntityFactory>(new EntityFactory());
+
         }
 
         public void Update(float deltaTime)

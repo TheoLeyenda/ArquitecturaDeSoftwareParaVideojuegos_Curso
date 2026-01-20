@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ZooArchitect.Architecture.GameLogic
+﻿namespace ZooArchitect.Architecture.GameLogic
 {
     public struct Resource
     {
@@ -17,22 +15,22 @@ namespace ZooArchitect.Architecture.GameLogic
             this.name = name;
             this.minValue = minValue;
             this.maxValue = maxValue;
-            this.currentValue = Math.Clamp(startValue, minValue, maxValue);
+            this.currentValue = System.Math.Clamp(startValue, minValue, maxValue);
         }
 
         public void AddResource(long amount)
         {
-            currentValue = Math.Clamp(currentValue + amount, minValue, maxValue);
+            currentValue = System.Math.Clamp(currentValue + amount, minValue, maxValue);
         }
 
         public void RemoveResource(long amount)
         {
-            currentValue = Math.Clamp(currentValue - amount, minValue, maxValue);
+            currentValue = System.Math.Clamp(currentValue - amount, minValue, maxValue);
         }
 
         public void SetResourceAmount(long amount)
         {
-            currentValue = Math.Clamp(amount, minValue, maxValue);
+            currentValue = System.Math.Clamp(amount, minValue, maxValue);
         }
     }
 }
