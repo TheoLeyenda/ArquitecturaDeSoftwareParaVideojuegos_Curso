@@ -6,174 +6,183 @@ using System.Reflection;
 
 namespace ImageCampus.ToolBox.Cast
 {
-	public static class StringCast
-	{
-		private static readonly Dictionary<Type, MethodInfo> addMethods = new Dictionary<Type, MethodInfo>();
-		private static readonly Dictionary<Type, Type[]> dictionaryTypes = new Dictionary<Type, Type[]>();
-		private static readonly Dictionary<Type, Type> elementTypes = new Dictionary<Type, Type>();
-		private static readonly Dictionary<Type, bool> isGenericCollections = new Dictionary<Type, bool>();
-		private static readonly Dictionary<Type, bool> isDictionary = new Dictionary<Type, bool>();
+    public static class StringCast
+    {
+        private static readonly Dictionary<Type, MethodInfo> addMethods = new Dictionary<Type, MethodInfo>();
+        private static readonly Dictionary<Type, Type[]> dictionaryTypes = new Dictionary<Type, Type[]>();
+        private static readonly Dictionary<Type, Type> elementTypes = new Dictionary<Type, Type>();
+        private static readonly Dictionary<Type, bool> isGenericCollections = new Dictionary<Type, bool>();
+        private static readonly Dictionary<Type, bool> isDictionary = new Dictionary<Type, bool>();
 
-		public static object Convert(string value, Type targetType)
-		{
-			if (targetType == typeof(string))
-				return value;
+        public static object Convert(string value, Type targetType)
+        {
+            if (targetType == typeof(string))
+                return value;
 
-			Type nullableType = Nullable.GetUnderlyingType(targetType);
-			if (nullableType != null)
-			{
-				if (string.IsNullOrEmpty(value))
-					return null;
+            if (targetType == typeof(bool))
+            {
+                if (string.Equals(value.ToLower(), "true"))
+                    return true;
 
-				return Convert(value, nullableType);
-			}
+                if (string.Equals(value.ToLower(), "false"))
+                    return false;
+            }
 
-			if (targetType.IsEnum)
-				return Enum.Parse(targetType, value, true);
+            Type nullableType = Nullable.GetUnderlyingType(targetType);
+            if (nullableType != null)
+            {
+                if (string.IsNullOrEmpty(value))
+                    return null;
 
-			if (IsDictionary(targetType))
-				return ConvertDictionary(value, targetType);
+                return Convert(value, nullableType);
+            }
 
-			if (targetType.IsArray)
-				return ConvertArray(value, targetType);
+            if (targetType.IsEnum)
+                return Enum.Parse(targetType, value, true);
 
-			if (IsGenericCollection(targetType))
-				return ConvertGenericCollection(value, targetType);
+            if (IsDictionary(targetType))
+                return ConvertDictionary(value, targetType);
 
-			return System.Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
-		}
+            if (targetType.IsArray)
+                return ConvertArray(value, targetType);
 
-		private static object ConvertDictionary(string value, Type dictionaryType)
-		{
-			object dictionary = Activator.CreateInstance(dictionaryType);
+            if (IsGenericCollection(targetType))
+                return ConvertGenericCollection(value, targetType);
 
-			Type[] keyValueTypes = GetDictionaryTypes(dictionaryType);
-			Type keyType = keyValueTypes[0];
-			Type valueType = keyValueTypes[1];
+            return System.Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+        }
 
-			MethodInfo addMethod = GetAddMethod(dictionaryType);
-			string[] entries = SplitDictionaryEntries(value);
+        private static object ConvertDictionary(string value, Type dictionaryType)
+        {
+            object dictionary = Activator.CreateInstance(dictionaryType);
 
-			for (int i = 0; i < entries.Length; i++)
-			{
-				string entry = entries[i].Trim('[', ']');
-				string[] keyValuePair = entry.Split(';', 2);
+            Type[] keyValueTypes = GetDictionaryTypes(dictionaryType);
+            Type keyType = keyValueTypes[0];
+            Type valueType = keyValueTypes[1];
 
-				object keyEntry = Convert(keyValuePair[0], keyType);
-				object valueEntry = Convert(keyValuePair[1], valueType);
+            MethodInfo addMethod = GetAddMethod(dictionaryType);
+            string[] entries = SplitDictionaryEntries(value);
 
-				addMethod.Invoke(dictionary, new[] { keyEntry, valueEntry });
-			}
+            for (int i = 0; i < entries.Length; i++)
+            {
+                string entry = entries[i].Trim('[', ']');
+                string[] keyValuePair = entry.Split(';', 2);
 
-			return dictionary;
-		}
+                object keyEntry = Convert(keyValuePair[0], keyType);
+                object valueEntry = Convert(keyValuePair[1], valueType);
 
-		private static bool IsDictionary(Type type)
-		{
-			if (!isDictionary.TryGetValue(type, out bool result))
-			{
-				result = type.IsGenericType &&
-						 type.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+                addMethod.Invoke(dictionary, new[] { keyEntry, valueEntry });
+            }
 
-				isDictionary.Add(type, result);
-			}
+            return dictionary;
+        }
 
-			return result;
-		}
+        private static bool IsDictionary(Type type)
+        {
+            if (!isDictionary.TryGetValue(type, out bool result))
+            {
+                result = type.IsGenericType &&
+                         type.GetGenericTypeDefinition() == typeof(Dictionary<,>);
 
-		private static Type[] GetDictionaryTypes(Type type)
-		{
-			if (!dictionaryTypes.TryGetValue(type, out Type[] types))
-			{
-				types = type.GetGenericArguments();
-				dictionaryTypes.Add(type, types);
-			}
+                isDictionary.Add(type, result);
+            }
 
-			return types;
-		}
+            return result;
+        }
 
-		private static object ConvertArray(string value, Type arrayType)
-		{
-			Type elementType = GetElementType(arrayType);
-			string[] tokens = SplitCollection(value);
+        private static Type[] GetDictionaryTypes(Type type)
+        {
+            if (!dictionaryTypes.TryGetValue(type, out Type[] types))
+            {
+                types = type.GetGenericArguments();
+                dictionaryTypes.Add(type, types);
+            }
 
-			Array array = Array.CreateInstance(elementType, tokens.Length);
-			for (int i = 0; i < tokens.Length; i++)
-			{
-				array.SetValue(Convert(tokens[i], elementType), i);
-			}
+            return types;
+        }
 
-			return array;
-		}
+        private static object ConvertArray(string value, Type arrayType)
+        {
+            Type elementType = GetElementType(arrayType);
+            string[] tokens = SplitCollection(value);
 
-		private static object ConvertGenericCollection(string value, Type genericCollectionType)
-		{
-			Type elementType = GetElementType(genericCollectionType);
-			MethodInfo addMethod = GetAddMethod(genericCollectionType);
+            Array array = Array.CreateInstance(elementType, tokens.Length);
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                array.SetValue(Convert(tokens[i], elementType), i);
+            }
 
-			object collection = Activator.CreateInstance(genericCollectionType);
-			string[] tokens = SplitCollection(value);
+            return array;
+        }
 
-			for (int i = 0; i < tokens.Length; i++)
-			{
-				object elementOfCollection = Convert(tokens[i], elementType);
-				addMethod.Invoke(collection, new[] { elementOfCollection });
-			}
+        private static object ConvertGenericCollection(string value, Type genericCollectionType)
+        {
+            Type elementType = GetElementType(genericCollectionType);
+            MethodInfo addMethod = GetAddMethod(genericCollectionType);
 
-			return collection;
-		}
+            object collection = Activator.CreateInstance(genericCollectionType);
+            string[] tokens = SplitCollection(value);
 
-		private static bool IsGenericCollection(Type type)
-		{
-			if (!isGenericCollections.TryGetValue(type, out bool result))
-			{
-				result = type.IsGenericType &&
-						 typeof(IEnumerable).IsAssignableFrom(type) &&
-						 type.GetMethod("Add") != null;
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                object elementOfCollection = Convert(tokens[i], elementType);
+                addMethod.Invoke(collection, new[] { elementOfCollection });
+            }
 
-				isGenericCollections.Add(type, result);
-			}
+            return collection;
+        }
 
-			return result;
-		}
+        private static bool IsGenericCollection(Type type)
+        {
+            if (!isGenericCollections.TryGetValue(type, out bool result))
+            {
+                result = type.IsGenericType &&
+                         typeof(IEnumerable).IsAssignableFrom(type) &&
+                         type.GetMethod("Add") != null;
 
-		private static Type GetElementType(Type type)
-		{
-			if (!elementTypes.TryGetValue(type, out Type elementType))
-			{
-				if (type.IsArray)
-					elementType = type.GetElementType();
-				else
-					elementType = type.GetGenericArguments()[0];
+                isGenericCollections.Add(type, result);
+            }
 
-				elementTypes.Add(type, elementType);
-			}
+            return result;
+        }
 
-			return elementType;
-		}
+        private static Type GetElementType(Type type)
+        {
+            if (!elementTypes.TryGetValue(type, out Type elementType))
+            {
+                if (type.IsArray)
+                    elementType = type.GetElementType();
+                else
+                    elementType = type.GetGenericArguments()[0];
 
-		private static MethodInfo GetAddMethod(Type type)
-		{
-			if (!addMethods.TryGetValue(type, out MethodInfo method))
-			{
-				method = type.GetMethod("Add");
-				if (method == null)
-					throw new InvalidOperationException($"Type {type} has no Add method");
+                elementTypes.Add(type, elementType);
+            }
 
-				addMethods.Add(type, method);
-			}
+            return elementType;
+        }
 
-			return method;
-		}
+        private static MethodInfo GetAddMethod(Type type)
+        {
+            if (!addMethods.TryGetValue(type, out MethodInfo method))
+            {
+                method = type.GetMethod("Add");
+                if (method == null)
+                    throw new InvalidOperationException($"Type {type} has no Add method");
 
-		private static string[] SplitCollection(string value)
-		{
-			return value.Split(',', StringSplitOptions.RemoveEmptyEntries);
-		}
+                addMethods.Add(type, method);
+            }
 
-		private static string[] SplitDictionaryEntries(string value)
-		{
-			return value.Split("],", StringSplitOptions.RemoveEmptyEntries);
-		}
-	}
+            return method;
+        }
+
+        private static string[] SplitCollection(string value)
+        {
+            return value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        private static string[] SplitDictionaryEntries(string value)
+        {
+            return value.Split("],", StringSplitOptions.RemoveEmptyEntries);
+        }
+    }
 }

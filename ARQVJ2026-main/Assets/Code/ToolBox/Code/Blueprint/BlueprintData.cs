@@ -7,7 +7,7 @@ namespace ImageCampus.ToolBox.Blueprints
     {
         private const int OFFSET = 1;
         internal string this[string blueprintID, string parameter] => 
-            rawContent[bluprintIDs.IndexOf(blueprintID) + OFFSET, parameter.IndexOf(parameter) + OFFSET];
+            rawContent[bluprintIDs.IndexOf(blueprintID) + OFFSET, parameters.IndexOf(parameter) + OFFSET];
 
         private readonly string[,] rawContent;
         private readonly List<string> bluprintIDs;

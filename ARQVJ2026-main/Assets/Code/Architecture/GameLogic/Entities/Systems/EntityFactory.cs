@@ -33,7 +33,7 @@ namespace ZooArchitect.Architecture.Entities
             raiseEntityCreatedMethod = GetType().GetMethod(nameof(RaiseEntityCreated), BindingFlags.NonPublic | BindingFlags.Instance);
 
             RegisterEntityMethods<Animal>();
-            CreateInstance<Animal>(new Coordinate(0, 0));
+            //CreateInstance<Animal>(new Coordinate(new Point(0, 0)));
         }
 
         public void CreateInstance<EntityType>(Coordinate coordinate) where EntityType : Entity
@@ -46,7 +46,7 @@ namespace ZooArchitect.Architecture.Entities
 
             object newEntity = entityConstructors[typeof(EntityType)].Invoke(new object[] { newEntityId, coordinate });
 
-            BlueprintBinder.Apply(ref newEntity, "Animals", "Monkey");
+            //BlueprintBinder.Apply(ref newEntity, "Animals", "Monkey");
 
             if (registerEntityMethod == null)
                 throw new MissingMethodException($"Missing EntityRegistry register method");
