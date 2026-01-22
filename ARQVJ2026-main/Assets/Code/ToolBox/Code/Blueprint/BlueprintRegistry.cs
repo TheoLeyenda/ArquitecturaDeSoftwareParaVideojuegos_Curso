@@ -4,7 +4,7 @@ using NPOI.XSSF.UserModel;
 using System.Collections.Generic;
 using System.IO;
 
-namespace ImageCampus.ToolBox.Bluprints
+namespace ImageCampus.ToolBox.Blueprints
 {
     public sealed class BlueprintRegistry : IService
     {

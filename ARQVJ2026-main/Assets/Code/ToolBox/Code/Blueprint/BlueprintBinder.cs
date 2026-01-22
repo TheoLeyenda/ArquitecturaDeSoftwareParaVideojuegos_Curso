@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace ImageCampus.ToolBox.Bluprints
+namespace ImageCampus.ToolBox.Blueprints
 {
     public sealed class BlueprintBinder : IService
     {

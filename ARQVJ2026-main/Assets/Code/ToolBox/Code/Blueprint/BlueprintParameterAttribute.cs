@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ImageCampus.ToolBox.Bluprints
+namespace ImageCampus.ToolBox.Blueprints
 {
     public sealed class BlueprintParameterAttribute : Attribute 
     {

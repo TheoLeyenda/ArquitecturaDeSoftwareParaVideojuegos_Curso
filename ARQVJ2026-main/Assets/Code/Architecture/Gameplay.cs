@@ -1,5 +1,5 @@
 
-using ImageCampus.ToolBox.Bluprints;
+using ImageCampus.ToolBox.Blueprints;
 using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;

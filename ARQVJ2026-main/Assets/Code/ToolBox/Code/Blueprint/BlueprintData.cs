@@ -1,7 +1,7 @@
 ﻿using NPOI.SS.UserModel;
 using System.Collections.Generic;
 
-namespace ImageCampus.ToolBox.Bluprints
+namespace ImageCampus.ToolBox.Blueprints
 {
     internal sealed class BlueprintData
     {
@@ -20,7 +20,7 @@ namespace ImageCampus.ToolBox.Bluprints
             int maxRow = 0;
             int maxColumn = 0;
 
-            for (int row = sheet.FirstRowNum; row < sheet.LastRowNum; row++)
+            for (int row = sheet.FirstRowNum; row <= sheet.LastRowNum; row++)
             {
                 IRow sheetRow = sheet.GetRow(row);
                 if (sheetRow == null)
@@ -46,7 +46,7 @@ namespace ImageCampus.ToolBox.Bluprints
 
             rawContent = new string[maxRow, maxColumn];
 
-            for (int row = 0; row < sheet.LastRowNum; row++)
+            for (int row = sheet.FirstRowNum; row <= sheet.LastRowNum; row++)
             {
                 IRow sheetRow = sheet.GetRow(row);
                 if (sheetRow == null)

@@ -1,4 +1,4 @@
-﻿using ImageCampus.ToolBox.Bluprints;
+﻿using ImageCampus.ToolBox.Blueprints;
 using ZooArchitect.Architecture.Math;
 
 namespace ZooArchitect.Architecture.Entities
