@@ -16,40 +16,48 @@ namespace ImageCampus.ToolBox.Cast
 
         public static object Convert(string value, Type targetType)
         {
-            if (targetType == typeof(string))
-                return value;
-
-            if (targetType == typeof(bool))
+            try
             {
-                if (string.Equals(value.ToLower(), "true"))
-                    return true;
+                if (targetType == typeof(string))
+                    return value;
 
-                if (string.Equals(value.ToLower(), "false"))
-                    return false;
+                if (targetType == typeof(bool))
+                {
+                    if (string.Equals(value.ToLower(), "true"))
+                        return true;
+
+                    if (string.Equals(value.ToLower(), "false"))
+                        return false;
+                }
+
+                Type nullableType = Nullable.GetUnderlyingType(targetType);
+                if (nullableType != null)
+                {
+                    if (string.IsNullOrEmpty(value))
+                        return null;
+
+                    return Convert(value, nullableType);
+                }
+
+                if (targetType.IsEnum)
+                    return Enum.Parse(targetType, value, true);
+
+                if (IsDictionary(targetType))
+                    return ConvertDictionary(value, targetType);
+
+                if (targetType.IsArray)
+                    return ConvertArray(value, targetType);
+
+                if (IsGenericCollection(targetType))
+                    return ConvertGenericCollection(value, targetType);
+
+                return System.Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
             }
-
-            Type nullableType = Nullable.GetUnderlyingType(targetType);
-            if (nullableType != null)
+            catch (Exception)
             {
-                if (string.IsNullOrEmpty(value))
-                    return null;
-
-                return Convert(value, nullableType);
+                throw new InvalidCastException($"Failed to convert {value} into {targetType.Name}");
             }
-
-            if (targetType.IsEnum)
-                return Enum.Parse(targetType, value, true);
-
-            if (IsDictionary(targetType))
-                return ConvertDictionary(value, targetType);
-
-            if (targetType.IsArray)
-                return ConvertArray(value, targetType);
-
-            if (IsGenericCollection(targetType))
-                return ConvertGenericCollection(value, targetType);
-
-            return System.Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+            
         }
 
         private static object ConvertDictionary(string value, Type dictionaryType)
