@@ -53,7 +53,15 @@ namespace ZooArchitect.Architecture.Entities
             return entities[ID] as EntityType;
         }
 
+        public IEnumerable<Entity> Entities => FilterEntities<Entity>();
+        public IEnumerable<Structure> Structures => FilterEntities<Structure>();
+        public IEnumerable<Jail> Jails => FilterEntities<Jail>();
+        public IEnumerable<Infrastructure> Infrastructures => FilterEntities<Infrastructure>();
+        public IEnumerable<LivingEntity> LivingEntities => FilterEntities<LivingEntity>();
         public IEnumerable<Animal> Animals => FilterEntities<Animal>();
+        public IEnumerable<Human> Humans => FilterEntities<Human>();
+        public IEnumerable<Worker> Workers => FilterEntities<Worker>();
+        public IEnumerable<Visitor> Visitors => FilterEntities<Visitor>();
 
         public IEnumerable<EntityType> FilterEntities<EntityType>() where EntityType : Entity 
         {
