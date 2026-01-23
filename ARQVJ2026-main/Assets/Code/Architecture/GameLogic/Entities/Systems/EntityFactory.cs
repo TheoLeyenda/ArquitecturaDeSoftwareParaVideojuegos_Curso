@@ -32,7 +32,7 @@ namespace ZooArchitect.Architecture.Entities
 
             raiseEntityCreatedMethod = GetType().GetMethod(nameof(RaiseEntityCreated), BindingFlags.NonPublic | BindingFlags.Instance);
 
-            RegisterEntityMethods<Animal>();
+            RegisterEntityMethods();
             //CreateInstance<Animal>(new Coordinate(new Point(0, 0)));
         }
 
@@ -73,10 +73,20 @@ namespace ZooArchitect.Architecture.Entities
             EventBus.Raise<EntityCreatedEvent<EntityType>>(newEntity.ID);
         }
 
-        private void RegisterEntityMethods<EntityType>() where EntityType : Entity
+        private void RegisterEntityMethods()
         {
-            Type entityType = typeof(EntityType);
-            if (entityType.IsClass && !entityType.IsAbstract)
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                if (type.IsClass && !type.IsAbstract)
+                {
+                    if (typeof(Entity).IsAssignableFrom(type))
+                    {
+                        RegisterEntity(type);
+                    }
+                }
+            }
+
+            void RegisterEntity(Type entityType)
             {
                 foreach (ConstructorInfo constructor in entityType.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance))
                 {

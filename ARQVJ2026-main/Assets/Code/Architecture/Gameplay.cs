@@ -27,7 +27,7 @@ namespace ZooArchitect.Architecture
             ServiceProvider.Instance.AddService<Wallet>(new Wallet());
             ServiceProvider.Instance.AddService<EntityRegistry>(new EntityRegistry());
             ServiceProvider.Instance.AddService<EntityFactory>(new EntityFactory());
-            new Map();
+            new Map(10,10);
 
         }
 
