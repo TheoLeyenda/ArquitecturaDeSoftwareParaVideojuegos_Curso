@@ -1,7 +1,9 @@
-﻿using ImageCampus.ToolBox.Events;
+﻿using ImageCampus.ToolBox.Blueprints;
+using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
 using System.Collections.Generic;
+using ZooArchitect.Architecture.Data;
 using ZooArchitect.Architecture.GameLogic.Events;
 
 namespace ZooArchitect.Architecture.GameLogic
@@ -12,35 +14,31 @@ namespace ZooArchitect.Architecture.GameLogic
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
         private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
 
-        private const int DAY_DURATION = 24;
-        private const int DAY_STEPS = 6;
-        private const int DAY_STEP_DURATION = DAY_DURATION / DAY_STEPS;
-
-        private const int HOUR_DURATION = 60;
+        private BlueprintRegistry BlueprintRegistry => ServiceProvider.Instance.GetService<BlueprintRegistry>();
+        private BlueprintBinder BlueprintBinder => ServiceProvider.Instance.GetService<BlueprintBinder>();
 
         private readonly List<DayStep> daySteps;
         private int currentStep;
-
         public DayStep CurrentDayStep => daySteps[currentStep];
 
         public DayNightCycle()
         {
             currentStep = 0;
             daySteps = new List<DayStep>();
-            daySteps.Add(new DayStep("Mañana", DAY_STEP_DURATION));
-            daySteps.Add(new DayStep("Mediodía", DAY_STEP_DURATION));
-            daySteps.Add(new DayStep("Tarde", DAY_STEP_DURATION));
-            daySteps.Add(new DayStep("Atardecer", DAY_STEP_DURATION));
-            daySteps.Add(new DayStep("Anochecer", DAY_STEP_DURATION));
-            daySteps.Add(new DayStep("Madrugada", DAY_STEP_DURATION));
+            foreach (string dayStepId in BlueprintRegistry.BlueprintsOf(TableNames.DAY_NIGHT_CYCLE_TABLE_NAME))
+            {
+                object dayStep = new DayStep();
+                BlueprintBinder.Apply(ref dayStep, TableNames.DAY_NIGHT_CYCLE_TABLE_NAME, dayStepId);
+                daySteps.Add((DayStep)dayStep);
+            }
 
-            TaskScheduler.Schedule(ChangeStep, DAY_STEP_DURATION * HOUR_DURATION);
+            TaskScheduler.Schedule(ChangeStep, CurrentDayStep.duration);
         }
 
         private void ChangeStep()
         {
             currentStep = (currentStep + 1) % daySteps.Count;
-            TaskScheduler.Schedule(ChangeStep, DAY_STEP_DURATION * HOUR_DURATION);
+            TaskScheduler.Schedule(ChangeStep, CurrentDayStep.duration);
             EventBus.Raise<DayStepChangeEvent>();
         }
     }

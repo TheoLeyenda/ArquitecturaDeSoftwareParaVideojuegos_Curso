@@ -1,9 +1,11 @@
-﻿namespace ZooArchitect.Architecture.GameLogic
+﻿using ImageCampus.ToolBox.Blueprints;
+
+namespace ZooArchitect.Architecture.GameLogic
 {
     public struct DayStep
     {
-        public string name;
-        public float duration;
+        [BlueprintParameter("Name")]public string name;
+        [BlueprintParameter("Duration")] public float duration;
 
         public DayStep(string name, float duration)
         {
