@@ -4,6 +4,7 @@ using ImageCampus.ToolBox.Services;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using ZooArchitect.Architecture.Data;
 using ZooArchitect.Architecture.Entities.Events;
 using ZooArchitect.Architecture.Math;
 
@@ -33,10 +34,9 @@ namespace ZooArchitect.Architecture.Entities
             raiseEntityCreatedMethod = GetType().GetMethod(nameof(RaiseEntityCreated), BindingFlags.NonPublic | BindingFlags.Instance);
 
             RegisterEntityMethods();
-            //CreateInstance<Animal>(new Coordinate(new Point(0, 0)));
         }
 
-        public void CreateInstance<EntityType>(Coordinate coordinate) where EntityType : Entity
+        public void CreateInstance<EntityType>(string blueprintId, Coordinate coordinate) where EntityType : Entity
         {
             lastAssignedEntityId++;
             uint newEntityId = lastAssignedEntityId;
@@ -46,7 +46,9 @@ namespace ZooArchitect.Architecture.Entities
 
             object newEntity = entityConstructors[typeof(EntityType)].Invoke(new object[] { newEntityId, coordinate });
 
-            //BlueprintBinder.Apply(ref newEntity, "Animals", "Monkey");
+            BlueprintBinder.Apply(ref newEntity, TableNames.ANIMALS_TABLE_NAME, blueprintId);
+
+            (newEntity as EntityType).Init();
 
             if (registerEntityMethod == null)
                 throw new MissingMethodException($"Missing EntityRegistry register method");
@@ -66,6 +68,8 @@ namespace ZooArchitect.Architecture.Entities
             {
                 raiseEntityCreatedMethod.MakeGenericMethod(entityTypes[i]).Invoke(this, new object[] { newEntity });
             }
+
+            (newEntity as EntityType).LateInit();
         }
 
         private void RaiseEntityCreated<EntityType>(EntityType newEntity) where EntityType : Entity

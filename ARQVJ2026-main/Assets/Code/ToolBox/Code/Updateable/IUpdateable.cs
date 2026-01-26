@@ -1,4 +1,4 @@
-﻿namespace ImageCampus.ToolBox.Updateable
+﻿namespace ImageCampus.ToolBox.Dataflow
 {
     public interface IUpdateable
     {

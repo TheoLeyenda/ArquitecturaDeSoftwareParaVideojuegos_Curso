@@ -16,10 +16,17 @@ namespace ZooArchitect.View
         
         private Gameplay gameplay;
         private ConsoleView consoleView;
-        void Start()
+
+        void Awake()
         {
             gameplay = new Gameplay(BluprintsPath);
             consoleView = new ConsoleView();
+        }
+
+        private void Start()
+        {
+            gameplay.Init();
+            gameplay.LateInit();
         }
 
         void Update()

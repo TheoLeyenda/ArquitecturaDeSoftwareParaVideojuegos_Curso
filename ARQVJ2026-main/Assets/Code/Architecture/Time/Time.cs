@@ -1,6 +1,6 @@
 ﻿using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
-using ImageCampus.ToolBox.Updateable;
+using ImageCampus.ToolBox.Dataflow;
 
 namespace ZooArchitect.Architecture.GameLogic
 {

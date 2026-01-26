@@ -1,17 +1,14 @@
-
 using ImageCampus.ToolBox.Blueprints;
+using ImageCampus.ToolBox.Dataflow;
 using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
-using ImageCampus.ToolBox.Updateable;
-using System;
 using ZooArchitect.Architecture.Entities;
-using ZooArchitect.Architecture.Entities.Events;
 using ZooArchitect.Architecture.GameLogic;
 
 namespace ZooArchitect.Architecture
 {
-    public sealed class Gameplay : IUpdateable
+    public sealed class Gameplay : IInitable, IUpdateable
     {
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
         private Time Time => ServiceProvider.Instance.GetService<Time>();
@@ -22,13 +19,20 @@ namespace ZooArchitect.Architecture
             ServiceProvider.Instance.AddService<BlueprintRegistry>(new BlueprintRegistry(blueprintsPath));
             ServiceProvider.Instance.AddService<BlueprintBinder>(new BlueprintBinder());
             ServiceProvider.Instance.AddService<TaskScheduler>(new TaskScheduler());
+        }
+
+        public void Init()
+        {
             ServiceProvider.Instance.AddService<Time>(new Time());
             ServiceProvider.Instance.AddService<DayNightCycle>(new DayNightCycle());
             ServiceProvider.Instance.AddService<Wallet>(new Wallet());
             ServiceProvider.Instance.AddService<EntityRegistry>(new EntityRegistry());
             ServiceProvider.Instance.AddService<EntityFactory>(new EntityFactory());
-            new Map(10,10);
+        }
 
+        public void LateInit()
+        {
+            new Map(10, 10);
         }
 
         public void Update(float deltaTime)
@@ -36,5 +40,6 @@ namespace ZooArchitect.Architecture
             Time.Update(deltaTime);
             TaskScheduler.Update(Time.LogicDeltaTime);
         }
+
     }
 }
