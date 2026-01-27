@@ -8,7 +8,7 @@ using ZooArchitect.Architecture.GameLogic;
 
 namespace ZooArchitect.Architecture
 {
-    public sealed class Gameplay : IInitable, IUpdateable
+    public sealed class Gameplay : IInitable, ITickable
     {
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
         private Time Time => ServiceProvider.Instance.GetService<Time>();
@@ -35,10 +35,10 @@ namespace ZooArchitect.Architecture
             new Map(10, 10);
         }
 
-        public void Update(float deltaTime)
+        public void Tick(float deltaTime)
         {
-            Time.Update(deltaTime);
-            TaskScheduler.Update(Time.LogicDeltaTime);
+            Time.Tick(deltaTime);
+            TaskScheduler.Tick(Time.LogicDeltaTime);
         }
 
     }

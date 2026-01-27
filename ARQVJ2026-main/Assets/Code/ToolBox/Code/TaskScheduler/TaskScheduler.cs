@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ImageCampus.ToolBox.Scheduling
 {
-    public sealed class TaskScheduler : IService, IUpdateable
+    public sealed class TaskScheduler : IService, ITickable
     {
         public sealed class ScheduledCall 
         {
@@ -32,7 +32,7 @@ namespace ImageCampus.ToolBox.Scheduling
             scheduledCalls.Add(new ScheduledCall(callback, remainingTime));
         }
 
-        public void Update(float deltaTime)
+        public void Tick(float deltaTime)
         {
             for (int i = scheduledCalls.Count - 1; i >= 0; i--)
             {

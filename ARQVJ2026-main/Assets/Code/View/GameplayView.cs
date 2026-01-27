@@ -1,4 +1,3 @@
-using ImageCampus.ToolBox.Dataflow;
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
 using System.IO;
@@ -31,7 +30,7 @@ namespace ZooArchitect.View
 
         void Update()
         {
-            gameplay.Update(Time.deltaTime);
+            gameplay.Tick(Time.deltaTime);
 
         }
 
@@ -41,15 +40,6 @@ namespace ZooArchitect.View
         }
 
 
-    }
-
-    internal class ViewComponent : MonoBehaviour, IInitable, IUpdateable
-    {
-        public virtual void Init() { }
-
-        public virtual void LateInit() { }
-
-        public virtual void Update(float deltaTime) { }
     }
 
 }

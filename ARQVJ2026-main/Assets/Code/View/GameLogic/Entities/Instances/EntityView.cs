@@ -5,7 +5,7 @@ using ZooArchitect.Architecture.Entities;
 
 namespace ZooArchitect.View.Entities
 {
-    internal abstract class EntityView : MonoBehaviour
+    internal abstract class EntityView : ViewComponent
     {
         protected EntityRegistry EntityRegistry => ServiceProvider.Instance.GetService<EntityRegistry>();
         public abstract Type ArchitectureEntityType { get; }
@@ -15,4 +15,5 @@ namespace ZooArchitect.View.Entities
         public uint ArchitectureEnitityID => archiectureEntitiyID;
         protected Entity ArchitectureEntity => EntityRegistry.GetAs<Entity>(archiectureEntitiyID);
     }
+
 }

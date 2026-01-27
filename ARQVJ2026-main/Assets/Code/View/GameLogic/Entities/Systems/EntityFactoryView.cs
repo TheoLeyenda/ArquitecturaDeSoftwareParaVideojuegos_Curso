@@ -33,6 +33,7 @@ namespace ZooArchitect.View.Entities
             GameObject instance = UnityEngine.Object.Instantiate(PrefabsRegistryView.Get(callback.blueprintId),
                 new Vector3((float)callback.coordinate.Origin.X, 0.0f, (float)callback.coordinate.Origin.Y), // TODO Coordinate to Vector3 translator
                 Quaternion.identity);
+            
             registerEntityMethod.Invoke(EntityRegistryView, new object[] { instance.GetComponent<EntityView>() });
         }
 

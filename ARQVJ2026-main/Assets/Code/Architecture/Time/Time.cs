@@ -4,7 +4,7 @@ using ImageCampus.ToolBox.Dataflow;
 
 namespace ZooArchitect.Architecture.GameLogic
 {
-    public sealed class Time : IService, IUpdateable
+    public sealed class Time : IService, ITickable
     {
         public bool IsPersistance => false;
 
@@ -17,7 +17,7 @@ namespace ZooArchitect.Architecture.GameLogic
             timeMultiplier = 1.0f;
         }
 
-        public void Update(float deltaTime)
+        public void Tick(float deltaTime)
         {
             lastDeltaTime = deltaTime;
         }
