@@ -2,15 +2,18 @@
 using System;
 using System.Collections.Generic;
 using ZooArchitect.Architecture.Entities;
+using ZooArchitect.View.Mapping;
 
 namespace ZooArchitect.View.Entities
 {
+    [ViewOf(typeof(EntityRegistry))]
     internal sealed class EntityRegistryView : IService
     {
         public bool IsPersistance => false;
 
         private Dictionary<uint, EntityView> entities;
         private Dictionary<Type, List<uint>> entityIdsPerType;
+
 
         public EntityRegistryView()
         {

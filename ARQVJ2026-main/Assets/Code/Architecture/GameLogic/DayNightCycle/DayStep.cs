@@ -4,7 +4,7 @@ namespace ZooArchitect.Architecture.GameLogic
 {
     public struct DayStep
     {
-        [BlueprintParameter("Name")]public string name;
+        [BlueprintParameter("Name")] public string name;
         [BlueprintParameter("Duration")] public float duration;
 
         public DayStep(string name, float duration)

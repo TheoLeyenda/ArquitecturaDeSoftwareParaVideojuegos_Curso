@@ -17,6 +17,8 @@ namespace ZooArchitect.Architecture.Entities
             entityIdsPerType = new Dictionary<Type, List<uint>>();
         }
 
+        public Entity this[uint ID] => entities[ID];
+
         internal string RegisterMethodName => nameof(Register);
 
         private void Register(Entity entity) 

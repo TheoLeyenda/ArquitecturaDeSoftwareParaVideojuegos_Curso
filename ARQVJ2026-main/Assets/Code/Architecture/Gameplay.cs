@@ -13,6 +13,8 @@ namespace ZooArchitect.Architecture
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
         private Time Time => ServiceProvider.Instance.GetService<Time>();
 
+        private EntityFactory EntityFactory => ServiceProvider.Instance.GetService<EntityFactory>();
+
         public Gameplay(string blueprintsPath)
         {
             ServiceProvider.Instance.AddService<EventBus>(new EventBus());
@@ -33,6 +35,7 @@ namespace ZooArchitect.Architecture
         public void LateInit()
         {
             new Map(10, 10);
+            EntityFactory.CreateInstance<Animal>("Monkey", new Math.Coordinate(new Math.Point(0,0)));
         }
 
         public void Tick(float deltaTime)
