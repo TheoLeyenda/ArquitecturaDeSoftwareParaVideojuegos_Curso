@@ -5,10 +5,10 @@ namespace ZooArchitect.Architecture.Math
     public struct Coordinate
     {
         private Point[] points;
+        public IEnumerable<Point> Points => points;
 
         public bool IsSingleCoordinate => points.Length == 1;
-
-        public IEnumerable<Point> Points => points;
+        public Point Origin => points[0];
 
         public Coordinate(params Point[] points)
         {

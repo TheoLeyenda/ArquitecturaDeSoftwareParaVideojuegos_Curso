@@ -66,15 +66,15 @@ namespace ZooArchitect.Architecture.Entities
 
             for (int i = entityTypes.Count - 1; i >= 0; i--)
             {
-                raiseEntityCreatedMethod.MakeGenericMethod(entityTypes[i]).Invoke(this, new object[] { newEntity });
+                raiseEntityCreatedMethod.MakeGenericMethod(entityTypes[i]).Invoke(this, new object[] { blueprintId, newEntity });
             }
 
             (newEntity as EntityType).LateInit();
         }
 
-        private void RaiseEntityCreated<EntityType>(EntityType newEntity) where EntityType : Entity
+        private void RaiseEntityCreated<EntityType>(string blueprintId, EntityType newEntity) where EntityType : Entity
         {
-            EventBus.Raise<EntityCreatedEvent<EntityType>>(newEntity.ID);
+            EventBus.Raise<EntityCreatedEvent<EntityType>>(blueprintId, newEntity.ID, newEntity.coordinate);
         }
 
         private void RegisterEntityMethods()

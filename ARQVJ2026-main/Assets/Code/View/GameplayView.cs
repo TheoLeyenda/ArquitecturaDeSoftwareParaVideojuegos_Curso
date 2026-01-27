@@ -1,6 +1,6 @@
+using ImageCampus.ToolBox.Dataflow;
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using ZooArchitect.Architecture;
@@ -13,7 +13,7 @@ namespace ZooArchitect.View
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
 
         private string BluprintsPath => Path.Combine(Application.streamingAssetsPath, "Blueprints", "Blueprints.xlsx");
-        
+
         private Gameplay gameplay;
         private ConsoleView consoleView;
 
@@ -32,7 +32,7 @@ namespace ZooArchitect.View
         void Update()
         {
             gameplay.Update(Time.deltaTime);
-            
+
         }
 
         private void OnDisable()
@@ -40,6 +40,16 @@ namespace ZooArchitect.View
             consoleView.Dispose();
         }
 
- 
+
     }
+
+    internal class ViewComponent : MonoBehaviour, IInitable, IUpdateable
+    {
+        public virtual void Init() { }
+
+        public virtual void LateInit() { }
+
+        public virtual void Update(float deltaTime) { }
+    }
+
 }
