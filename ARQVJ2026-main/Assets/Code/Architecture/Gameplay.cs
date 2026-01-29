@@ -3,18 +3,19 @@ using ImageCampus.ToolBox.Dataflow;
 using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
+using System;
+using ZooArchitect.Architecture.Controllers;
 using ZooArchitect.Architecture.Entities;
 using ZooArchitect.Architecture.GameLogic;
 
 namespace ZooArchitect.Architecture
 {
-    public sealed class Gameplay : IInitable, ITickable
+    public sealed class Gameplay : IInitable, ITickable, IDisposable
     {
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
         private Time Time => ServiceProvider.Instance.GetService<Time>();
 
-        private EntityFactory EntityFactory => ServiceProvider.Instance.GetService<EntityFactory>();
-
+        private SpawnEntityControllerArchitecture spawnEntityControllerArchitecture;
         public Gameplay(string blueprintsPath)
         {
             ServiceProvider.Instance.AddService<EventBus>(new EventBus());
@@ -35,7 +36,7 @@ namespace ZooArchitect.Architecture
         public void LateInit()
         {
             new Map(10, 10);
-            EntityFactory.CreateInstance<Animal>("Monkey", new Math.Coordinate(new Math.Point(0,0)));
+            spawnEntityControllerArchitecture = new SpawnEntityControllerArchitecture();
         }
 
         public void Tick(float deltaTime)
@@ -44,5 +45,9 @@ namespace ZooArchitect.Architecture
             TaskScheduler.Tick(Time.LogicDeltaTime);
         }
 
+        public void Dispose()
+        {
+            spawnEntityControllerArchitecture.Dispose();
+        }
     }
 }

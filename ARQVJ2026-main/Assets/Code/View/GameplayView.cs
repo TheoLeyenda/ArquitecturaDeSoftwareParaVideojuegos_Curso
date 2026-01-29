@@ -3,6 +3,7 @@ using ImageCampus.ToolBox.Services;
 using System.IO;
 using UnityEngine;
 using ZooArchitect.Architecture;
+using ZooArchitect.View.Controller;
 using ZooArchitect.View.Entities;
 using ZooArchitect.View.Logs;
 using ZooArchitect.View.Mapping;
@@ -20,7 +21,7 @@ namespace ZooArchitect.View
         private Gameplay gameplay;
         private ConsoleView consoleView;
         private EntityFactoryView entityFactoryView;
-
+        private SpawnEntityControllerView spawnEntityControllerView;
         void Awake()
         {
             ViewArchitectureMap.Init();
@@ -37,21 +38,23 @@ namespace ZooArchitect.View
         private void Start()
         {
             gameplay.Init();
+            
+            
             gameplay.LateInit();
+            spawnEntityControllerView = new SpawnEntityControllerView();
         }
 
         void Update()
         {
             gameplay.Tick(Time.deltaTime);
-
+            spawnEntityControllerView.Tick(Time.deltaTime);
         }
 
         private void OnDisable()
         {
+            gameplay.Dispose();
             consoleView.Dispose();
+            spawnEntityControllerView.Dispose();
         }
-
-
     }
-
 }

@@ -4,13 +4,14 @@ using ImageCampus.ToolBox.Services;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using ZooArchitect.Architecture.Controllers.Events;
 using ZooArchitect.Architecture.Data;
 using ZooArchitect.Architecture.Entities.Events;
 using ZooArchitect.Architecture.Math;
 
 namespace ZooArchitect.Architecture.Entities
 {
-    public sealed class EntityFactory : IService
+    public sealed class EntityFactory : IService , IDisposable
     {
         private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
         private EntityRegistry EntityRegistry => ServiceProvider.Instance.GetService<EntityRegistry>();
@@ -34,6 +35,14 @@ namespace ZooArchitect.Architecture.Entities
             raiseEntityCreatedMethod = GetType().GetMethod(nameof(RaiseEntityCreated), BindingFlags.NonPublic | BindingFlags.Instance);
 
             RegisterEntityMethods();
+
+
+            EventBus.Subscribe<SpawnEntityRequestAceptedEvent>(SpawnEntity);
+        }
+
+        private void SpawnEntity(in SpawnEntityRequestAceptedEvent spawnEntityRequestAceptedEvent)
+        {
+            CreateInstance<Animal>(spawnEntityRequestAceptedEvent.blueprintToSpawn, spawnEntityRequestAceptedEvent.coordinateToSpawn);
         }
 
         public void CreateInstance<EntityType>(string blueprintId, Coordinate coordinate) where EntityType : Entity
@@ -104,6 +113,11 @@ namespace ZooArchitect.Architecture.Entities
                     }
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            EventBus.Unsubscribe<SpawnEntityRequestAceptedEvent>(SpawnEntity);
         }
     }
 }

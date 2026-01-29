@@ -45,7 +45,7 @@ namespace ZooArchitect.View.Resources
             if (prefab == null)
             {
                 prefab = missingPrefab;
-                Console.Warning($"Missing prefab in resource folder: {resourcePath}");
+                GameConsole.Warning($"Missing prefab in resource folder: {resourcePath}");
             }
 
             prefabs.Add(resourcePath, prefab);
