@@ -18,6 +18,8 @@ namespace ZooArchitect.View.Entities
         private PrefabsRegistryView PrefabsRegistryView => ServiceProvider.Instance.GetService<PrefabsRegistryView>();
         private EntityRegistry EntityRegistry => ServiceProvider.Instance.GetService<EntityRegistry>();
 
+        private GameScene GameScene => ServiceProvider.Instance.GetService<GameScene>();
+
         private MethodInfo registerEntityMethod;
         private MethodInfo setEntityIdMethod;
 
@@ -28,20 +30,19 @@ namespace ZooArchitect.View.Entities
             registerEntityMethod = EntityRegistryView.GetType().GetMethod(EntityRegistryView.RegisterMethodName,
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
-            setEntityIdMethod = typeof(EntityView).GetMethod(EntityView.SetIdMethodName, 
+            setEntityIdMethod = typeof(EntityView).GetMethod(EntityView.SetIdMethodName,
                 BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         private void OnEntityCreated(in EntityCreatedEvent<Entity> callback)
         {
-            GameObject instance = UnityEngine.Object.Instantiate(PrefabsRegistryView.Get(callback.blueprintId),
-                new Vector3((float)callback.coordinate.Origin.X, 0.0f, (float)callback.coordinate.Origin.Y), // TODO Coordinate to Vector3 translator
-                Quaternion.identity);
-            
-            Component viewComponent = instance.AddComponent(
-                ViewArchitectureMap.ViewOf(EntityRegistry[callback.entityCreatedId].GetType()));
+            ViewComponent viewComponent = GameScene.AddSceneComponent(
+               ViewArchitectureMap.ViewOf(EntityRegistry[callback.entityCreatedId].GetType()),
+               PrefabsRegistryView.Get(callback.blueprintId).name + $"  -  Architecture type: {EntityRegistry[callback.entityCreatedId].GetType().Name} - ID: {callback.entityCreatedId}",
+               GameScene.EntitiesContainer.transform,
+               PrefabsRegistryView.Get(callback.blueprintId));
 
-            viewComponent.gameObject.name += $"  -  Architecture type: {EntityRegistry[callback.entityCreatedId].GetType().Name} - ID: {callback.entityCreatedId}";
+            viewComponent.transform.position = new Vector3((float)callback.coordinate.Origin.X, 0.0f, (float)callback.coordinate.Origin.Y); // TODO Coordinate to Vector3 translator
 
             setEntityIdMethod.Invoke(viewComponent, new object[] { callback.entityCreatedId });
 
