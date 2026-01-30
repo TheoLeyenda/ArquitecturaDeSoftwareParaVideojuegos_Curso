@@ -54,7 +54,10 @@ namespace ZooArchitect.View
             string pathToTilePrefab = pathToTilePrefabByIDHash[tileCreatedEvent.tileId].path;
             GameObject tileToSpawn = PrefabsRegistryView.Get(TableNamesView.TILES_VIEW_TABLE_NAME, pathToTilePrefabByIDHash[tileCreatedEvent.tileId].ID);
 
-            UnityEngine.Object.Instantiate(tileToSpawn, grid.CellToLocal(new Vector3Int(tileCreatedEvent.xCoord, tileCreatedEvent.yCoord, 0)), Quaternion.identity);
+            UnityEngine.Object.Instantiate(tileToSpawn,
+                grid.CellToLocal(new Vector3Int(tileCreatedEvent.xCoord, tileCreatedEvent.yCoord, 0))
+                + new Vector3(grid.cellSize.x * 0.5f, grid.cellSize.y * 0.5f, 0.0f),
+                Quaternion.identity, grid.gameObject.transform);
         }
 
         public override void LateInit()
