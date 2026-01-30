@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEngine;
 using ZooArchitect.Architecture.Entities;
 using ZooArchitect.Architecture.Entities.Events;
+using ZooArchitect.View.Data;
 using ZooArchitect.View.Mapping;
 using ZooArchitect.View.Resources;
 
@@ -34,17 +35,17 @@ namespace ZooArchitect.View.Entities
                 BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        private void OnEntityCreated(in EntityCreatedEvent<Entity> callback)
+        private void OnEntityCreated(in EntityCreatedEvent<Entity> entityCreatedEvent)
         {
             ViewComponent viewComponent = GameScene.AddSceneComponent(
-               ViewArchitectureMap.ViewOf(EntityRegistry[callback.entityCreatedId].GetType()),
-               PrefabsRegistryView.Get(callback.blueprintId).name + $"  -  Architecture type: {EntityRegistry[callback.entityCreatedId].GetType().Name} - ID: {callback.entityCreatedId}",
+               ViewArchitectureMap.ViewOf(EntityRegistry[entityCreatedEvent.entityCreatedId].GetType()),
+               PrefabsRegistryView.Get(TableNamesView.ANIMALS_VIEW_TABLE_NAME, entityCreatedEvent.blueprintId).name + $"  -  Architecture type: {EntityRegistry[entityCreatedEvent.entityCreatedId].GetType().Name} - ID: {entityCreatedEvent.entityCreatedId}",
                GameScene.EntitiesContainer.transform,
-               PrefabsRegistryView.Get(callback.blueprintId));
+               PrefabsRegistryView.Get(TableNamesView.ANIMALS_VIEW_TABLE_NAME, entityCreatedEvent.blueprintId));
 
-            viewComponent.transform.position = new Vector3((float)callback.coordinate.Origin.X, 0.0f, (float)callback.coordinate.Origin.Y); // TODO Coordinate to Vector3 translator
+            viewComponent.transform.position = new Vector3((float)entityCreatedEvent.coordinate.Origin.X, 0.0f, (float)entityCreatedEvent.coordinate.Origin.Y); // TODO Coordinate to Vector3 translator
 
-            setEntityIdMethod.Invoke(viewComponent, new object[] { callback.entityCreatedId });
+            setEntityIdMethod.Invoke(viewComponent, new object[] { entityCreatedEvent.entityCreatedId });
 
             registerEntityMethod.Invoke(EntityRegistryView, new object[] { viewComponent });
         }

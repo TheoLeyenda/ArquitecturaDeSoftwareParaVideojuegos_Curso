@@ -13,35 +13,55 @@ namespace ZooArchitect.View
         private EntityFactoryView entityFactoryView;
         private SpawnEntityControllerView spawnEntityControllerView;
 
+        private Container mapContainer;
         private Container entitiesContainer;
 
-        internal Container EntitiesContainer => entitiesContainer; 
+        internal Container MapContainer => mapContainer;
+        internal Container EntitiesContainer => entitiesContainer;
+
+        private MapView mapView;
 
         public override void Init()
         {
             base.Init();
             ServiceProvider.Instance.AddService<EntityRegistryView>(new EntityRegistryView());
             entityFactoryView = new EntityFactoryView();
+
+            mapContainer = GameScene.AddSceneComponent<Container>("Map container", this.transform);
+            mapContainer.Init();
             entitiesContainer = GameScene.AddSceneComponent<Container>("Entities container", this.transform);
+            entitiesContainer.Init();
+
+            mapView = GameScene.AddSceneComponent<MapView>("Map", MapContainer.transform);
+            mapView.Init();
         }
 
         public override void LateInit()
         {
             base.LateInit();
             spawnEntityControllerView = new SpawnEntityControllerView();
+            mapContainer.LateInit();
+            entitiesContainer.LateInit();
+            mapView.LateInit();
         }
 
         public override void Tick(float deltaTime)
         {
             base.Tick(deltaTime);
-            spawnEntityControllerView.Tick(Time.deltaTime);
+            spawnEntityControllerView?.Tick(deltaTime);
+            mapContainer.Tick(deltaTime);
+            entitiesContainer.Tick(deltaTime);
+            mapView.Tick(deltaTime);
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            spawnEntityControllerView.Dispose();
+            spawnEntityControllerView?.Dispose();
             entityFactoryView.Dispose();
+            mapContainer.Dispose();
+            entitiesContainer.Dispose();
+            mapView.Dispose();
         }
 
         public static ComponentType AddSceneComponent<ComponentType>(string name, Transform parent = null, GameObject prefab = null) where ComponentType : ViewComponent 

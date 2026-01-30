@@ -30,5 +30,6 @@ namespace ImageCampus.ToolBox.Blueprints
 
         public List<string> BlueprintsOf(string blueprintTable) => blueprintDatas[blueprintTable].BluprintIDs;
         public List<string> ParametersOf(string blueprintTable) => blueprintDatas[blueprintTable].Parameters;
+        public string this[string blueprintTable, string blueprintId, string parameter] => blueprintDatas[blueprintTable][blueprintId, parameter];
     }
 }

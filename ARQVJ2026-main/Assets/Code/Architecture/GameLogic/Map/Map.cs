@@ -1,14 +1,17 @@
 ﻿using ImageCampus.ToolBox.Blueprints;
+using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Services;
 using System;
 using System.Collections.Generic;
 using ZooArchitect.Architecture.Data;
 using ZooArchitect.Architecture.Exceptions;
+using ZooArchitect.Architecture.GameLogic.Events;
 
 namespace ZooArchitect.Architecture.GameLogic
 {
     public sealed class Map
     {
+        private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
         private BlueprintRegistry BlueprintRegistry => ServiceProvider.Instance.GetService<BlueprintRegistry>();
         private BlueprintBinder BlueprintBinder => ServiceProvider.Instance.GetService<BlueprintBinder>();
 
@@ -47,11 +50,11 @@ namespace ZooArchitect.Architecture.GameLogic
 
             grid = new Tile[sizeX, sizeY];
             int defaultDataHash = 0;
-            foreach (TileData tileData in tileDatas.Values)
+            foreach (KeyValuePair<int, TileData> tileData in tileDatas)
             {
-                if (tileData.isDefault)
+                if (tileData.Value.isDefault)
                 {
-                    defaultDataHash = tileData.GetHashCode();
+                    defaultDataHash = tileData.Key.GetHashCode();
                     break;
                 }
             }
@@ -64,8 +67,11 @@ namespace ZooArchitect.Architecture.GameLogic
                 for (int y = 0; y < sizeY; y++)
                 {
                     grid[x, y] = new Tile(defaultDataHash);
+                    EventBus.Raise<TileCreatedEvent>(defaultDataHash, x, y);
                 }
             }
+
+            EventBus.Raise<MapCreatedEvent>();
         }
     }
 }

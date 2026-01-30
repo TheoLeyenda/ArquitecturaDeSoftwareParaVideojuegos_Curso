@@ -1,0 +1,81 @@
+﻿using ImageCampus.ToolBox.Blueprints;
+using ImageCampus.ToolBox.Events;
+using ImageCampus.ToolBox.Services;
+using System.Collections.Generic;
+using UnityEngine;
+using ZooArchitect.Architecture.GameLogic.Events;
+using ZooArchitect.View.Data;
+using ZooArchitect.View.Resources;
+
+namespace ZooArchitect.View
+{
+    internal sealed class MapView : ViewComponent
+    {
+        private BlueprintRegistry BlueprintRegiistry => ServiceProvider.Instance.GetService<BlueprintRegistry>();
+        private BlueprintBinder BlueprintBinder => ServiceProvider.Instance.GetService<BlueprintBinder>();
+
+        private PrefabsRegistryView PrefabsRegistryView => ServiceProvider.Instance.GetService<PrefabsRegistryView>();
+
+        private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
+
+        private Grid grid;
+        private Dictionary<int, (string ID, string path)> pathToTilePrefabByIDHash;
+
+        public override void Init()
+        {
+            base.Init();
+            grid = gameObject.AddComponent<Grid>();
+
+            LoadTilePrefabPaths();
+
+            EventBus.Subscribe<TileCreatedEvent>(OnTileCreated);
+            EventBus.Subscribe<MapCreatedEvent>(OnMapCreated);
+        }
+
+        private void LoadTilePrefabPaths()
+        {
+            pathToTilePrefabByIDHash = new Dictionary<int, (string, string)>();
+
+            foreach (string blueprint in BlueprintRegiistry.BlueprintsOf(TableNamesView.TILES_VIEW_TABLE_NAME))
+            {
+                object tileViewData = new TileViewData();
+                BlueprintBinder.Apply(ref tileViewData, TableNamesView.TILES_VIEW_TABLE_NAME, blueprint);
+                pathToTilePrefabByIDHash.Add(((TileViewData)tileViewData).ArchitectureIHHash, (((TileViewData)tileViewData).architectureID, ((TileViewData)tileViewData).prefabPath));
+            }
+        }
+
+        private void OnMapCreated(in MapCreatedEvent mapCreatedEvent)
+        {
+            EventBus.Unsubscribe<TileCreatedEvent>(OnTileCreated);
+        }
+
+        private void OnTileCreated(in TileCreatedEvent tileCreatedEvent)
+        {
+            string pathToTilePrefab = pathToTilePrefabByIDHash[tileCreatedEvent.tileId].path;
+            GameObject tileToSpawn = PrefabsRegistryView.Get(TableNamesView.TILES_VIEW_TABLE_NAME, pathToTilePrefabByIDHash[tileCreatedEvent.tileId].ID);
+
+            UnityEngine.Object.Instantiate(tileToSpawn, grid.CellToLocal(new Vector3Int(tileCreatedEvent.xCoord, tileCreatedEvent.yCoord, 0)), Quaternion.identity);
+        }
+
+        public override void LateInit()
+        {
+            base.LateInit();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            EventBus.Unsubscribe<TileCreatedEvent>(OnTileCreated);
+            EventBus.Unsubscribe<MapCreatedEvent>(OnMapCreated);
+        }
+
+        struct TileViewData
+        {
+            [BlueprintParameter("Architecture ID")] public string architectureID;
+            [BlueprintParameter("Prefab resource path")] public string prefabPath;
+
+            public int ArchitectureIHHash => architectureID.GetHashCode();
+        }
+
+    }
+}
