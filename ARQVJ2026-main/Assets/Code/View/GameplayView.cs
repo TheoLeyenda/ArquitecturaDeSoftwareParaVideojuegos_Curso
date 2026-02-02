@@ -6,6 +6,7 @@ using ZooArchitect.Architecture;
 using ZooArchitect.View.Logs;
 using ZooArchitect.View.Mapping;
 using ZooArchitect.View.Resources;
+using ZooArchitect.View.Scene;
 
 namespace ZooArchitect.View
 {
@@ -17,11 +18,18 @@ namespace ZooArchitect.View
 
         private string BluprintsPath => Path.Combine(Application.streamingAssetsPath, "Blueprints", "Blueprints.xlsx");
 
+
+        [SerializeField] private Canvas gameCanvas;
+
         private Gameplay gameplay;
         private ConsoleView consoleView;
 
         void Awake()
         {
+            if (gameCanvas == null)
+                throw new MissingComponentException("Missing canvas!");
+
+
             ViewArchitectureMap.Init();
 
             gameplay = new Gameplay(BluprintsPath);
@@ -36,7 +44,7 @@ namespace ZooArchitect.View
         private void Start()
         {
             gameplay.Init();
-            GameScene.Init();
+            GameScene.Init(gameCanvas);
 
 
             gameplay.LateInit();

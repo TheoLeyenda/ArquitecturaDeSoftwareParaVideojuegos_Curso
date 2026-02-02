@@ -1,14 +1,20 @@
 ﻿using ImageCampus.ToolBox.Services;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using ZooArchitect.View.Controller;
+using ZooArchitect.View.Data;
 using ZooArchitect.View.Entities;
+using ZooArchitect.View.Resources;
 
-namespace ZooArchitect.View
+namespace ZooArchitect.View.Scene
 {
     internal sealed class GameScene : ViewComponent , IService
     {
         public bool IsPersistance => false;
+
+        private PrefabsRegistryView PrefabsRegistryView => ServiceProvider.Instance.GetService<PrefabsRegistryView>();
+        private ContextMenuView ContextMenuView => ServiceProvider.Instance.GetService<ContextMenuView>();
 
         private EntityFactoryView entityFactoryView;
         private SpawnEntityControllerView spawnEntityControllerView;
@@ -20,6 +26,7 @@ namespace ZooArchitect.View
         internal Container EntitiesContainer => entitiesContainer;
 
         private MapView mapView;
+
 
         public override void Init()
         {
@@ -34,6 +41,19 @@ namespace ZooArchitect.View
 
             mapView = GameScene.AddSceneComponent<MapView>("Map", MapContainer.transform);
             mapView.Init();
+        }
+
+        public override void Init(params object[] parameters)
+        {
+            base.Init(parameters);
+            Canvas canvasView = parameters[0] as Canvas;
+
+            GameObject contextMenuPrefab = PrefabsRegistryView.Get(TableNamesView.UI_VIEW_TABLE_NAME, "ContextMenuContainer");
+            GameObject buttonMenuPrefab = PrefabsRegistryView.Get(TableNamesView.UI_VIEW_TABLE_NAME, "ButtonPrefab");
+
+            ContextMenuView contextMenuView = GameScene.AddSceneComponent<ContextMenuView>("ContextMenu", canvasView.transform, contextMenuPrefab);
+            ServiceProvider.Instance.AddService<ContextMenuView>(contextMenuView);
+            contextMenuView.Init(contextMenuPrefab, buttonMenuPrefab, canvasView);
         }
 
         public override void LateInit()
@@ -52,6 +72,18 @@ namespace ZooArchitect.View
             mapContainer.Tick(deltaTime);
             entitiesContainer.Tick(deltaTime);
             mapView.Tick(deltaTime);
+            ContextMenuView.Tick(deltaTime);
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                Dictionary<string, Action> example = new Dictionary<string, Action>();
+                example.Add("Example 1", () => { Debug.Log("Example 1"); });
+                example.Add("Example 2", () => { Debug.Log("Example 2"); });
+                example.Add("Example 3", () => { Debug.Log("Example 3"); });
+                example.Add("Example 4", () => { Debug.Log("Example 4"); });
+
+                ContextMenuView.Show(example);
+            }
         }
 
         public override void Dispose()

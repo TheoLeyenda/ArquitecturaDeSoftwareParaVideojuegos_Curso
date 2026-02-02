@@ -1,8 +1,8 @@
 ﻿using ImageCampus.ToolBox.Services;
 using System;
-using UnityEngine;
 using ZooArchitect.Architecture.Entities;
 using ZooArchitect.View.Mapping;
+using ZooArchitect.View.Scene;
 
 namespace ZooArchitect.View.Entities
 {
@@ -17,7 +17,7 @@ namespace ZooArchitect.View.Entities
         protected Entity ArchitectureEntity => EntityRegistry.GetAs<Entity>(archiectureEntitiyID);
 
         public static string SetIdMethodName => nameof(SetId);
-        private void SetId(uint ID) 
+        private void SetId(uint ID)
         {
             archiectureEntitiyID = ID;
         }

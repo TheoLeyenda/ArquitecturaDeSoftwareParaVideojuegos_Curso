@@ -8,6 +8,7 @@ using ZooArchitect.Architecture.Entities.Events;
 using ZooArchitect.View.Data;
 using ZooArchitect.View.Mapping;
 using ZooArchitect.View.Resources;
+using ZooArchitect.View.Scene;
 
 namespace ZooArchitect.View.Entities
 {

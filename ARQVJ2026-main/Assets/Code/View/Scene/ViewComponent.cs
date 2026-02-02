@@ -2,11 +2,16 @@
 using System;
 using UnityEngine;
 
-namespace ZooArchitect.View
+namespace ZooArchitect.View.Scene
 {
     internal abstract class ViewComponent : MonoBehaviour, IInitable, ITickable, IDisposable
     {
         public virtual void Init() { }
+
+        public virtual void Init(params object[] parameters) 
+        {
+            Init();
+        }
 
         public virtual void LateInit() { }
 

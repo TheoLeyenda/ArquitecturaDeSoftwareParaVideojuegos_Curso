@@ -1,4 +1,4 @@
-﻿namespace ZooArchitect.View
+﻿namespace ZooArchitect.View.Scene
 {
     internal sealed class Container : ViewComponent
     {

@@ -7,7 +7,7 @@ using ZooArchitect.Architecture.GameLogic.Events;
 using ZooArchitect.View.Data;
 using ZooArchitect.View.Resources;
 
-namespace ZooArchitect.View
+namespace ZooArchitect.View.Scene
 {
     internal sealed class MapView : ViewComponent
     {
