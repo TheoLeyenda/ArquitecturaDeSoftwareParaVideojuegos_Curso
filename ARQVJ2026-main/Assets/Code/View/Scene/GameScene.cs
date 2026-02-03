@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ZooArchitect.Architecture.Math;
 using ZooArchitect.View.Controller;
 using ZooArchitect.View.Data;
 using ZooArchitect.View.Entities;
@@ -12,6 +13,9 @@ namespace ZooArchitect.View.Scene
     internal sealed class GameScene : ViewComponent , IService
     {
         public bool IsPersistance => false;
+
+        public const int MAP_DRAWING_ORDER = 0;
+        public const int ENTITIES_DRAWING_ORDER = 1;
 
         private PrefabsRegistryView PrefabsRegistryView => ServiceProvider.Instance.GetService<PrefabsRegistryView>();
         private ContextMenuView ContextMenuView => ServiceProvider.Instance.GetService<ContextMenuView>();
@@ -73,17 +77,11 @@ namespace ZooArchitect.View.Scene
             entitiesContainer.Tick(deltaTime);
             mapView.Tick(deltaTime);
             ContextMenuView.Tick(deltaTime);
+        }
 
-            if (Input.GetMouseButtonDown(1))
-            {
-                Dictionary<string, Action> example = new Dictionary<string, Action>();
-                example.Add("Example 1", () => { Debug.Log("Example 1"); });
-                example.Add("Example 2", () => { Debug.Log("Example 2"); });
-                example.Add("Example 3", () => { Debug.Log("Example 3"); });
-                example.Add("Example 4", () => { Debug.Log("Example 4"); });
-
-                ContextMenuView.Show(example);
-            }
+        public Vector3 CoordinateToWorld(Coordinate coordinate) 
+        {
+            return mapView.CoordinateToGrid(coordinate);
         }
 
         public override void Dispose()

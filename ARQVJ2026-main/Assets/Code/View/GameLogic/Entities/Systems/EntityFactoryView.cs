@@ -44,7 +44,10 @@ namespace ZooArchitect.View.Entities
                GameScene.EntitiesContainer.transform,
                PrefabsRegistryView.Get(TableNamesView.ANIMALS_VIEW_TABLE_NAME, entityCreatedEvent.blueprintId));
 
-            viewComponent.transform.position = new Vector3((float)entityCreatedEvent.coordinate.Origin.X, 0.0f, (float)entityCreatedEvent.coordinate.Origin.Y); // TODO Coordinate to Vector3 translator
+            viewComponent.transform.position = GameScene.CoordinateToWorld(EntityRegistry[entityCreatedEvent.entityCreatedId].coordinate);
+
+            SpriteRenderer sprite = viewComponent.GetComponent<SpriteRenderer>();
+            sprite.sortingOrder = GameScene.ENTITIES_DRAWING_ORDER;
 
             setEntityIdMethod.Invoke(viewComponent, new object[] { entityCreatedEvent.entityCreatedId });
 
