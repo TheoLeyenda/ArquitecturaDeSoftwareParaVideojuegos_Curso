@@ -30,7 +30,7 @@ namespace ZooArchitect.View.Scene
         internal Container EntitiesContainer => entitiesContainer;
 
         private MapView mapView;
-
+        private CameraView cameraView;
 
         public override void Init()
         {
@@ -58,6 +58,11 @@ namespace ZooArchitect.View.Scene
             ContextMenuView contextMenuView = GameScene.AddSceneComponent<ContextMenuView>("ContextMenu", canvasView.transform, contextMenuPrefab);
             ServiceProvider.Instance.AddService<ContextMenuView>(contextMenuView);
             contextMenuView.Init(contextMenuPrefab, buttonMenuPrefab, canvasView);
+
+            GameObject cameraPrefab = PrefabsRegistryView.Get(TableNamesView.CAMERA_VIEW_TABLE_NAME, "GameCamera");
+
+            cameraView = GameScene.AddSceneComponent<CameraView>("Main Game Camera", null, cameraPrefab);
+            cameraView.Init(cameraView.GetComponent<Camera>());
         }
 
         public override void LateInit()
@@ -82,6 +87,11 @@ namespace ZooArchitect.View.Scene
         public Vector3 CoordinateToWorld(Coordinate coordinate) 
         {
             return mapView.CoordinateToGrid(coordinate);
+        }
+
+        public Point GetMouseGridCoordinate() 
+        {
+            return mapView.GetMouseCoordinateAsPointInGrid(cameraView);
         }
 
         public override void Dispose()

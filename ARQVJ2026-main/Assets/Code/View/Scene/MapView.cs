@@ -73,6 +73,15 @@ namespace ZooArchitect.View.Scene
             return output;
         }
 
+        public Point GetMouseCoordinateAsPointInGrid(CameraView cameraView)
+        {
+            Vector3 mouseScreePosition = Input.mousePosition;
+            Vector3 mouseWorldPosition = cameraView.GameCamera.ScreenToWorldPoint(mouseScreePosition);
+            mouseScreePosition.z = 0.0f;
+
+            Vector3Int cellCoordinate = grid.WorldToCell(mouseWorldPosition);
+            return new Point(cellCoordinate.x, cellCoordinate.y);
+        }
 
         public override void Dispose()
         {
