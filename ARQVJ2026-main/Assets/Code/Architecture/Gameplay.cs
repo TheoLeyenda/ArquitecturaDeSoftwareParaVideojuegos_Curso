@@ -13,7 +13,7 @@ namespace ZooArchitect.Architecture
         private TaskScheduler TaskScheduler => ServiceProvider.Instance.GetService<TaskScheduler>();
         private Time Time => ServiceProvider.Instance.GetService<Time>();
 
-        private Scene scene;
+        private Scene Scene => ServiceProvider.Instance.GetService<Scene>();
 
         public Gameplay(string blueprintsPath)
         {
@@ -21,29 +21,29 @@ namespace ZooArchitect.Architecture
             ServiceProvider.Instance.AddService<BlueprintRegistry>(new BlueprintRegistry(blueprintsPath));
             ServiceProvider.Instance.AddService<BlueprintBinder>(new BlueprintBinder());
             ServiceProvider.Instance.AddService<TaskScheduler>(new TaskScheduler());
-            scene = new Scene();
+            ServiceProvider.Instance.AddService<Scene>(new Scene());
         }
 
         public void Init()
         {
-            scene.Init();
+            Scene.Init();
         }
 
         public void LateInit()
         {
-            scene.LateInit();
+            Scene.LateInit();
         }
 
         public void Tick(float deltaTime)
         {
             Time.Tick(deltaTime);
             TaskScheduler.Tick(Time.LogicDeltaTime);
-            scene.Tick(Time.LogicDeltaTime);
+            Scene.Tick(Time.LogicDeltaTime);
         }
 
         public void Dispose()
         {
-            scene.Dispose();
+            Scene.Dispose();
         }
     }
 }

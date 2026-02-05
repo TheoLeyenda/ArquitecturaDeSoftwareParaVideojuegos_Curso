@@ -31,6 +31,7 @@ namespace ZooArchitect.View.Scene
 
         private MapView mapView;
         private CameraView cameraView;
+        private EntitiesLogicView entitiesLogicView;
 
         public override void Init()
         {
@@ -45,6 +46,9 @@ namespace ZooArchitect.View.Scene
 
             mapView = GameScene.AddSceneComponent<MapView>("Map", MapContainer.transform);
             mapView.Init();
+
+            entitiesLogicView = new EntitiesLogicView();
+            entitiesLogicView.Init();
         }
 
         public override void Init(params object[] parameters)
@@ -63,6 +67,7 @@ namespace ZooArchitect.View.Scene
 
             cameraView = GameScene.AddSceneComponent<CameraView>("Main Game Camera", null, cameraPrefab);
             cameraView.Init(cameraView.GetComponent<Camera>());
+
         }
 
         public override void LateInit()
@@ -72,6 +77,7 @@ namespace ZooArchitect.View.Scene
             mapContainer.LateInit();
             entitiesContainer.LateInit();
             mapView.LateInit();
+            entitiesLogicView.LateInit();
         }
 
         public override void Tick(float deltaTime)
@@ -82,6 +88,8 @@ namespace ZooArchitect.View.Scene
             entitiesContainer.Tick(deltaTime);
             mapView.Tick(deltaTime);
             ContextMenuView.Tick(deltaTime);
+            cameraView.Tick(deltaTime);
+            entitiesLogicView.Tick(deltaTime);
         }
 
         public Vector3 CoordinateToWorld(Coordinate coordinate) 
@@ -102,6 +110,7 @@ namespace ZooArchitect.View.Scene
             mapContainer.Dispose();
             entitiesContainer.Dispose();
             mapView.Dispose();
+            entitiesLogicView.Dispose();
         }
 
         public static ComponentType AddSceneComponent<ComponentType>(string name, Transform parent = null, GameObject prefab = null) where ComponentType : ViewComponent 

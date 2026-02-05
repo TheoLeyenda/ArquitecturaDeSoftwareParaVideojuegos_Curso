@@ -24,13 +24,13 @@ namespace ZooArchitect.Architecture.Entities
         private void Register(Entity entity) 
         {
             entities.Add(entity.ID, entity);
-            Type currentEntityType = entity.GetType();
+            Type currentEntityType = null;
             do
             {
+                currentEntityType = currentEntityType == null ? entity.GetType() : currentEntityType.BaseType;
                 if (!entityIdsPerType.ContainsKey(currentEntityType))
                     entityIdsPerType.Add(currentEntityType, new List<uint>());
                 entityIdsPerType[currentEntityType].Add(entity.ID);
-                currentEntityType = currentEntityType.BaseType;
             } while (currentEntityType != typeof(Entity));
         }
 

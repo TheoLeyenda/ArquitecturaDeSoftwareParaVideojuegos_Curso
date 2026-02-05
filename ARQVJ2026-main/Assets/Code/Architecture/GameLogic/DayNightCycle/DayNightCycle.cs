@@ -40,6 +40,8 @@ namespace ZooArchitect.Architecture.GameLogic
             currentStep = (currentStep + 1) % daySteps.Count;
             TaskScheduler.Schedule(ChangeStep, CurrentDayStep.duration);
             EventBus.Raise<DayStepChangeEvent>();
+            if (currentStep == 0)
+                EventBus.Raise<DayChangeEvent>();
         }
     }
 }

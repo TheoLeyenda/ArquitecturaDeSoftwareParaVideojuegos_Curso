@@ -4,6 +4,13 @@ namespace ZooArchitect.View.Scene
 {
     internal sealed class CameraView : ViewComponent
     {
+        private const float MOVE_SPEED = 10.0f;
+        private const float SMOOTH_TIME = 0.15f;
+        private const float EDGE_SIZE = 20.0f;
+
+        private Vector3 velocity;
+        private Vector3 targetPosition;
+
         private Camera gameCamera;
 
         public Camera GameCamera  => gameCamera;
@@ -12,6 +19,32 @@ namespace ZooArchitect.View.Scene
         {
             base.Init(parameters);
             gameCamera = parameters[0] as Camera;
+            GameCamera.transform.position = Vector3.back;
+        }
+
+        public override void Tick(float deltaTime)
+        {
+            Vector3 mousePosition = Input.mousePosition;
+            Vector3 diretion = Vector3.zero;
+
+            if (mousePosition.x <= EDGE_SIZE)
+                diretion.x = -1.0f;
+            else if (mousePosition.x >= (Screen.width - EDGE_SIZE))
+                diretion.x = 1.0f;
+
+            if (mousePosition.y <= EDGE_SIZE)
+                diretion.y = -1.0f;
+            else if (mousePosition.y >= (Screen.height - EDGE_SIZE))
+                diretion.y = 1.0f;
+
+            if (diretion.sqrMagnitude > 0.0f)
+            {
+                diretion.Normalize();
+                targetPosition += diretion * MOVE_SPEED * deltaTime;
+            }
+
+            targetPosition.z = -1.0f;
+            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, SMOOTH_TIME);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ZooArchitect.Architecture.Data;
 using ZooArchitect.Architecture.Exceptions;
 using ZooArchitect.Architecture.GameLogic.Events;
+using ZooArchitect.Architecture.Math;
 
 namespace ZooArchitect.Architecture.GameLogic
 {
@@ -72,6 +73,21 @@ namespace ZooArchitect.Architecture.GameLogic
             }
 
             EventBus.Raise<MapCreatedEvent>();
+        }
+
+        public (uint x, uint y) GetSize() => (sizeX, sizeY);
+
+        public bool IsCoordinateInsideMap(Coordinate coordinate)
+        {
+            (uint x, uint y) mapSize = GetSize();
+
+            foreach (Point point in coordinate.Points)
+            {
+                if (point.X >= mapSize.x || point.X < 0 || point.Y >= mapSize.y || point.Y < 0)
+                    return false;
+            }
+
+            return true;
         }
     }
 }
