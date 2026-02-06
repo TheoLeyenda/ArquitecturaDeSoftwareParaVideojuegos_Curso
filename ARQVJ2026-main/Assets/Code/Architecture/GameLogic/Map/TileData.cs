@@ -10,5 +10,6 @@ namespace ZooArchitect.Architecture.GameLogic
         [BlueprintParameter("Can Spawn Humans")] public bool canSpawnHumans;
         [BlueprintParameter("Can Dispawn Humans")] public bool canDispawnHumans;
         [BlueprintParameter("Is Default")] public bool isDefault;
+        [BlueprintParameter("Is Unique")] public bool isUnique;
     }
 }

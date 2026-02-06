@@ -1,6 +1,7 @@
 ﻿using ImageCampus.ToolBox.Blueprints;
 using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Services;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ZooArchitect.Architecture.GameLogic.Events;
@@ -31,7 +32,9 @@ namespace ZooArchitect.View.Scene
 
             EventBus.Subscribe<TileCreatedEvent>(OnTileCreated);
             EventBus.Subscribe<MapCreatedEvent>(OnMapCreated);
+            EventBus.Subscribe<TileModifiedEvent>(OnTileModified);
         }
+
 
         private void LoadTilePrefabPaths()
         {
@@ -52,9 +55,19 @@ namespace ZooArchitect.View.Scene
 
         private void OnTileCreated(in TileCreatedEvent tileCreatedEvent)
         {
-            GameObject tileToSpawn = PrefabsRegistryView.Get(TableNamesView.TILES_VIEW_TABLE_NAME, pathToTilePrefabByIDHash[tileCreatedEvent.tileId].ID);
+            CreateTile(tileCreatedEvent.tileId, tileCreatedEvent.xCoord, tileCreatedEvent.yCoord);
+        }
+        private void OnTileModified(in TileModifiedEvent tileModifiedEvent)
+        {
+            //TODO: Destroy old
+            CreateTile(tileModifiedEvent.newTileId, tileModifiedEvent.xCoord, tileModifiedEvent.yCoord);
+        }
+
+        private void CreateTile(int tileId, int coordX, int CoordY) 
+        {
+            GameObject tileToSpawn = PrefabsRegistryView.Get(TableNamesView.TILES_VIEW_TABLE_NAME, pathToTilePrefabByIDHash[tileId].ID);
             SpriteRenderer sprite = Instantiate(tileToSpawn,
-                grid.CellToLocal(new Vector3Int(tileCreatedEvent.xCoord, tileCreatedEvent.yCoord, 0))
+                grid.CellToLocal(new Vector3Int(coordX, CoordY, 0))
                 + new Vector3(grid.cellSize.x * 0.5f, grid.cellSize.y * 0.5f, 0.0f),
                 Quaternion.identity, grid.gameObject.transform).GetComponent<SpriteRenderer>();
             sprite.sortingOrder = GameScene.MAP_DRAWING_ORDER;
@@ -73,9 +86,9 @@ namespace ZooArchitect.View.Scene
             return output;
         }
 
-        public Point GetMouseCoordinateAsPointInGrid(CameraView cameraView)
+        public Point GetCoordinateAsPointInGrid(CameraView cameraView, Vector3 coordinate) 
         {
-            Vector3 mouseScreePosition = Input.mousePosition;
+            Vector3 mouseScreePosition = coordinate;
             Vector3 mouseWorldPosition = cameraView.GameCamera.ScreenToWorldPoint(mouseScreePosition);
             mouseScreePosition.z = 0.0f;
 
@@ -83,11 +96,17 @@ namespace ZooArchitect.View.Scene
             return new Point(cellCoordinate.x, cellCoordinate.y);
         }
 
+        public Point GetMouseCoordinateAsPointInGrid(CameraView cameraView)
+        {
+            return GetCoordinateAsPointInGrid(cameraView, Input.mousePosition);
+        }
+
         public override void Dispose()
         {
             base.Dispose();
             EventBus.Unsubscribe<TileCreatedEvent>(OnTileCreated);
             EventBus.Unsubscribe<MapCreatedEvent>(OnMapCreated);
+            EventBus.Unsubscribe<TileModifiedEvent>(OnTileModified);
         }
 
         struct TileViewData

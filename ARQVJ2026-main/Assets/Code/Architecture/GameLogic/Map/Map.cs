@@ -16,13 +16,23 @@ namespace ZooArchitect.Architecture.GameLogic
         private BlueprintRegistry BlueprintRegistry => ServiceProvider.Instance.GetService<BlueprintRegistry>();
         private BlueprintBinder BlueprintBinder => ServiceProvider.Instance.GetService<BlueprintBinder>();
 
+
         private uint sizeX;
         private uint sizeY;
 
         private Tile[,] grid;
+        private Dictionary<string, List<(int x, int y)>> instances;
 
         private Dictionary<int, TileData> tileDatas;
         private Dictionary<int, string> tileHashToName;
+
+        private List<string> uniqueTileDefinitions;
+        public IReadOnlyList<string> UniqueTileDefinitions => uniqueTileDefinitions;
+
+        public bool HasInstancesOf(string tileID) => instances.ContainsKey(tileID) && instances[tileID].Count > 0;
+        public int GetInstanceAmountOf(string tileID) => instances[tileID].Count;
+
+        public IEnumerable<string> GetTileDefinitionIDs => tileHashToName.Values;
 
         public Map(uint sizeX, uint sizeY)
         {
@@ -31,6 +41,9 @@ namespace ZooArchitect.Architecture.GameLogic
 
             tileDatas = new Dictionary<int, TileData>();
             tileHashToName = new Dictionary<int, string>();
+            instances = new Dictionary<string, List<(int x, int y)>>();
+            uniqueTileDefinitions = new List<string>();
+
 
             foreach (string tileTypeID in BlueprintRegistry.BlueprintsOf(TableNames.TILE_TYPES_TABLE_NAME))
             {
@@ -45,17 +58,24 @@ namespace ZooArchitect.Architecture.GameLogic
                     throw new DataEntryException($"Failed to read {TableNames.TILE_TYPES_TABLE_NAME} - {tileTypeID}\n({exception.Message})");
                 }
 
+                if (((TileData)tileData).isUnique)
+                {
+                    uniqueTileDefinitions.Add(tileTypeID);
+                }
+
                 tileDatas.Add(tileTypeID.GetHashCode(), (TileData)tileData);
                 tileHashToName.Add(tileTypeID.GetHashCode(), tileTypeID);
             }
 
             grid = new Tile[sizeX, sizeY];
             int defaultDataHash = 0;
+            string defaultDataID = string.Empty;
             foreach (KeyValuePair<int, TileData> tileData in tileDatas)
             {
                 if (tileData.Value.isDefault)
                 {
                     defaultDataHash = tileData.Key.GetHashCode();
+                    defaultDataID = tileHashToName[defaultDataHash];
                     break;
                 }
             }
@@ -68,11 +88,37 @@ namespace ZooArchitect.Architecture.GameLogic
                 for (int y = 0; y < sizeY; y++)
                 {
                     grid[x, y] = new Tile(defaultDataHash);
+
+                    if (!instances.ContainsKey(defaultDataID))
+                        instances.Add(defaultDataID, new List<(int x, int y)>());
+
+                    instances[defaultDataID].Add((x, y));
+
                     EventBus.Raise<TileCreatedEvent>(defaultDataHash, x, y);
                 }
             }
 
             EventBus.Raise<MapCreatedEvent>();
+        }
+
+        public void SwapTile((int x, int y) coordinate, string newTileId)
+        {
+            if (!tileHashToName.ContainsValue(newTileId))
+                throw new System.MissingFieldException($"{newTileId} is not a valid Tile key definition.");
+
+            if (!instances.ContainsKey(newTileId))
+                instances.Add(newTileId, new List<(int x, int y)>());
+
+            Tile originalTileInCoordinate = grid[coordinate.x, coordinate.y];
+            string originalTileId = tileHashToName[originalTileInCoordinate.tileTypeId];
+
+            instances[originalTileId].Remove(coordinate);
+            instances[newTileId].Add(coordinate);
+
+            grid[coordinate.x, coordinate.y].tileTypeId = newTileId.GetHashCode();
+
+            EventBus.Raise<TileModifiedEvent>(grid[coordinate.x, coordinate.y].tileTypeId,
+                coordinate.x, coordinate.y);
         }
 
         public (uint x, uint y) GetSize() => (sizeX, sizeY);

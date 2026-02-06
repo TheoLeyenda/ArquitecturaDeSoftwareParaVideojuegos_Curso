@@ -1,6 +1,5 @@
 ﻿using ImageCampus.ToolBox.Services;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using ZooArchitect.Architecture.Math;
 using ZooArchitect.View.Controller;
@@ -10,7 +9,7 @@ using ZooArchitect.View.Resources;
 
 namespace ZooArchitect.View.Scene
 {
-    internal sealed class GameScene : ViewComponent , IService
+    internal sealed class GameScene : ViewComponent, IService
     {
         public bool IsPersistance => false;
 
@@ -21,7 +20,8 @@ namespace ZooArchitect.View.Scene
         private ContextMenuView ContextMenuView => ServiceProvider.Instance.GetService<ContextMenuView>();
 
         private EntityFactoryView entityFactoryView;
-        private SpawnEntityControllerView spawnEntityControllerView;
+
+        private ControllerViewStrategy controllerViewStrategy;
 
         private Container mapContainer;
         private Container entitiesContainer;
@@ -73,7 +73,7 @@ namespace ZooArchitect.View.Scene
         public override void LateInit()
         {
             base.LateInit();
-            spawnEntityControllerView = new SpawnEntityControllerView();
+            controllerViewStrategy = new ControllerViewStrategy();
             mapContainer.LateInit();
             entitiesContainer.LateInit();
             mapView.LateInit();
@@ -83,7 +83,9 @@ namespace ZooArchitect.View.Scene
         public override void Tick(float deltaTime)
         {
             base.Tick(deltaTime);
-            spawnEntityControllerView?.Tick(deltaTime);
+
+            controllerViewStrategy?.Tick(deltaTime);
+
             mapContainer.Tick(deltaTime);
             entitiesContainer.Tick(deltaTime);
             mapView.Tick(deltaTime);
@@ -92,20 +94,25 @@ namespace ZooArchitect.View.Scene
             entitiesLogicView.Tick(deltaTime);
         }
 
-        public Vector3 CoordinateToWorld(Coordinate coordinate) 
+        public Vector3 CoordinateToWorld(Coordinate coordinate)
         {
             return mapView.CoordinateToGrid(coordinate);
         }
 
-        public Point GetMouseGridCoordinate() 
+        public Point GetMouseGridCoordinate()
         {
             return mapView.GetMouseCoordinateAsPointInGrid(cameraView);
+        }
+
+        public Point GetGridCoordinate(Vector3 coordinate)
+        {
+            return mapView.GetCoordinateAsPointInGrid(cameraView, coordinate);
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            spawnEntityControllerView?.Dispose();
+            controllerViewStrategy?.Dispose();
             entityFactoryView.Dispose();
             mapContainer.Dispose();
             entitiesContainer.Dispose();
@@ -113,7 +120,7 @@ namespace ZooArchitect.View.Scene
             entitiesLogicView.Dispose();
         }
 
-        public static ComponentType AddSceneComponent<ComponentType>(string name, Transform parent = null, GameObject prefab = null) where ComponentType : ViewComponent 
+        public static ComponentType AddSceneComponent<ComponentType>(string name, Transform parent = null, GameObject prefab = null) where ComponentType : ViewComponent
         {
             return AddSceneComponent(typeof(ComponentType), name, parent, prefab) as ComponentType;
         }
