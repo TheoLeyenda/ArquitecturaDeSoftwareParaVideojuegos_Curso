@@ -1,7 +1,6 @@
 ﻿using ImageCampus.ToolBox.Blueprints;
 using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Services;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ZooArchitect.Architecture.GameLogic.Events;
@@ -20,13 +19,20 @@ namespace ZooArchitect.View.Scene
 
         private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
 
+        private Container container;
+
         private Grid grid;
+
+        private Dictionary<(int x, int y), int> instanceHashPerCoordinate;
+
         private Dictionary<int, (string ID, string path)> pathToTilePrefabByIDHash;
 
         public override void Init()
         {
             base.Init();
+            instanceHashPerCoordinate = new Dictionary<(int x, int y), int>();
             grid = gameObject.AddComponent<Grid>();
+            container = GameScene.GetContainer(this);
 
             LoadTilePrefabPaths();
 
@@ -34,7 +40,6 @@ namespace ZooArchitect.View.Scene
             EventBus.Subscribe<MapCreatedEvent>(OnMapCreated);
             EventBus.Subscribe<TileModifiedEvent>(OnTileModified);
         }
-
 
         private void LoadTilePrefabPaths()
         {
@@ -59,18 +64,30 @@ namespace ZooArchitect.View.Scene
         }
         private void OnTileModified(in TileModifiedEvent tileModifiedEvent)
         {
-            //TODO: Destroy old
+            DestroyTile(tileModifiedEvent.xCoord, tileModifiedEvent.yCoord);
             CreateTile(tileModifiedEvent.newTileId, tileModifiedEvent.xCoord, tileModifiedEvent.yCoord);
         }
 
-        private void CreateTile(int tileId, int coordX, int CoordY) 
+        private void DestroyTile(int coordX, int coordY) 
+        {
+            int hashToDestroy = instanceHashPerCoordinate[(coordX, coordY)];
+            Destroy(container[hashToDestroy]);
+            instanceHashPerCoordinate.Remove((coordX, coordY));
+        }
+
+        private void CreateTile(int tileId, int coordX, int coordY)
         {
             GameObject tileToSpawn = PrefabsRegistryView.Get(TableNamesView.TILES_VIEW_TABLE_NAME, pathToTilePrefabByIDHash[tileId].ID);
-            SpriteRenderer sprite = Instantiate(tileToSpawn,
-                grid.CellToLocal(new Vector3Int(coordX, CoordY, 0))
+            GameObject tileInstance = Instantiate(tileToSpawn,
+                grid.CellToLocal(new Vector3Int(coordX, coordY, 0))
                 + new Vector3(grid.cellSize.x * 0.5f, grid.cellSize.y * 0.5f, 0.0f),
-                Quaternion.identity, grid.gameObject.transform).GetComponent<SpriteRenderer>();
-            sprite.sortingOrder = GameScene.MAP_DRAWING_ORDER;
+                Quaternion.identity, grid.gameObject.transform);
+            instanceHashPerCoordinate.Add((coordX, coordY), tileInstance.GetInstanceID());
+
+            container.Register(tileInstance);
+
+            if (tileInstance.TryGetComponent(out SpriteRenderer sprite))
+                sprite.sortingOrder = GameScene.MAP_DRAWING_ORDER;
         }
 
         public override void LateInit()
@@ -80,13 +97,18 @@ namespace ZooArchitect.View.Scene
 
         public Vector3 CoordinateToGrid(Coordinate coordinate)
         {
-            Vector3Int coord = new Vector3Int(coordinate.Origin.X, coordinate.Origin.Y, 0);
+            return PointToGrid(coordinate.Origin);
+        }
+
+        public Vector3 PointToGrid(Point point) 
+        {
+            Vector3Int coord = new Vector3Int(point.X, point.Y, 0);
             Vector3 output = grid.GetCellCenterWorld(coord);
             output.z = 0.0f;
             return output;
         }
 
-        public Point GetCoordinateAsPointInGrid(CameraView cameraView, Vector3 coordinate) 
+        public Point GetCoordinateAsPointInGrid(CameraView cameraView, Vector3 coordinate)
         {
             Vector3 mouseScreePosition = coordinate;
             Vector3 mouseWorldPosition = cameraView.GameCamera.ScreenToWorldPoint(mouseScreePosition);

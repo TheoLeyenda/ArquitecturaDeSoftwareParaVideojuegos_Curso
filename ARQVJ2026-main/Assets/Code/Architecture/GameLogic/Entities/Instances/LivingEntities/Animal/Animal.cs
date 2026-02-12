@@ -11,10 +11,23 @@ namespace ZooArchitect.Architecture.Entities
     {
         private Wallet Wallet => ServiceProvider.Instance.GetService<Wallet>();
 
-        [BlueprintParameter("Food needed per day")] private long foodNeededPerDay;
-        public long FoodNeededPerDay => foodNeededPerDay;
+        [BlueprintParameter("Food needed per day")] private int foodNeededPerDay;
+        public int FoodNeededPerDay => foodNeededPerDay;
 
-        public object ServiceProvier { get; private set; }
+        [BlueprintParameter("Weight")] private int weight;
+        public int Weight => weight;
+
+        [BlueprintParameter("Sleep start hour")] private int sleepStartHour;
+        public int SleepStartHour => sleepStartHour;
+
+        [BlueprintParameter("Sleep end hour")] private int sleepEndHour;
+        public int SleepEndHour => sleepEndHour;
+
+        [BlueprintParameter("Price")] private int price;
+        public int Price => price;
+
+        [BlueprintParameter("Incompatible in habitat animals")] private string[] incompatibleInHabitatAnimals;
+        public string[] IncompatibleInHabitatAnimals => incompatibleInHabitatAnimals;
 
         private Animal(uint ID, Coordinate coordinate) : base(ID, coordinate)
         {

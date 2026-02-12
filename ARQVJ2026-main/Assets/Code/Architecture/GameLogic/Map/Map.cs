@@ -29,10 +29,17 @@ namespace ZooArchitect.Architecture.GameLogic
         private List<string> uniqueTileDefinitions;
         public IReadOnlyList<string> UniqueTileDefinitions => uniqueTileDefinitions;
 
+        private string habitatTileDefinition;
+        public string HabitatTileDefinition  => habitatTileDefinition;
+
+        private string habitatWallTileDefinition;
+        public string HabitatWallTileDefinition => habitatWallTileDefinition;
+
         public bool HasInstancesOf(string tileID) => instances.ContainsKey(tileID) && instances[tileID].Count > 0;
         public int GetInstanceAmountOf(string tileID) => instances[tileID].Count;
 
         public IEnumerable<string> GetTileDefinitionIDs => tileHashToName.Values;
+
 
         public Map(uint sizeX, uint sizeY)
         {
@@ -56,6 +63,16 @@ namespace ZooArchitect.Architecture.GameLogic
                 catch (DataMisalignedException exception)
                 {
                     throw new DataEntryException($"Failed to read {TableNames.TILE_TYPES_TABLE_NAME} - {tileTypeID}\n({exception.Message})");
+                }
+
+                if (((TileData)tileData).isAnimalHabitat)
+                {
+                    habitatTileDefinition = tileTypeID;
+                }
+
+                if (((TileData)tileData).isAnimalHabitatWall)
+                {
+                    habitatWallTileDefinition = tileTypeID;
                 }
 
                 if (((TileData)tileData).isUnique)

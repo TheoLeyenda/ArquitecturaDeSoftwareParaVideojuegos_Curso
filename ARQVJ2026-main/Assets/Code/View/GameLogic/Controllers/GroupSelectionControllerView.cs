@@ -1,13 +1,10 @@
-﻿using ImageCampus.ToolBox.Services;
-using UnityEngine;
+﻿using UnityEngine;
 using ZooArchitect.Architecture.Math;
-
 
 namespace ZooArchitect.View.Controller
 {
     internal abstract class GroupSelectionControllerView : ControllerView
     {
-
         private Point startGroupClickPoint;
         private Point finishGroupClickPoint;
 

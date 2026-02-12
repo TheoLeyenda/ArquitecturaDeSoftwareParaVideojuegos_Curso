@@ -1,36 +1,38 @@
-﻿namespace ZooArchitect.Architecture.GameLogic
+﻿using ImageCampus.ToolBox.Blueprints;
+
+namespace ZooArchitect.Architecture.GameLogic
 {
-    public struct Resource
-    {
-        private string name;
-        private long minValue;
-        private long maxValue;
-        private long currentValue;
+	public struct Resource
+	{
+		[BlueprintParameter("Name")] private string name;
+		[BlueprintParameter("Min posible value")] private long minValue;
+		[BlueprintParameter("Max posible value")] private long maxValue;
+		[BlueprintParameter("Start amount")] private long currentValue;
 
-        public string Name => name;
-        public long CurrentValue => currentValue;
+		public string Name => name;
+		public long CurrentValue => currentValue;
 
-        public Resource(string name, long minValue, long maxValue, long startValue)
-        {
-            this.name = name;
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-            this.currentValue = System.Math.Clamp(startValue, minValue, maxValue);
-        }
+		public Resource(string name, long minValue, long maxValue, long startValue)
+		{
+			this.name = name;
+			this.minValue = minValue;
+			this.maxValue = maxValue;
+			this.currentValue = System.Math.Clamp(startValue, minValue, maxValue);
+		}
 
-        public void AddResource(long amount)
-        {
-            currentValue = System.Math.Clamp(currentValue + amount, minValue, maxValue);
-        }
+		public void AddResource(long amount)
+		{
+			currentValue = System.Math.Clamp(currentValue + amount, minValue, maxValue);
+		}
 
-        public void RemoveResource(long amount)
-        {
-            currentValue = System.Math.Clamp(currentValue - amount, minValue, maxValue);
-        }
+		public void RemoveResource(long amount)
+		{
+			currentValue = System.Math.Clamp(currentValue - amount, minValue, maxValue);
+		}
 
-        public void SetResourceAmount(long amount)
-        {
-            currentValue = System.Math.Clamp(amount, minValue, maxValue);
-        }
-    }
+		public void SetResourceAmount(long amount)
+		{
+			currentValue = System.Math.Clamp(amount, minValue, maxValue);
+		}
+	}
 }

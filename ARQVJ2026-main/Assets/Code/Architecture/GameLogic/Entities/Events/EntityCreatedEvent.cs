@@ -7,21 +7,27 @@ namespace ZooArchitect.Architecture.Entities.Events
         where EntityType : Entity
     {
         public string blueprintId;
+        public string blueprintTable;
         public uint entityCreatedId;
-        public Coordinate coordinate;
+        public Point origin;
+        public Point end;
 
         public void Assign(params object[] parameters)
         {
             blueprintId = (string)parameters[0];
-            entityCreatedId = (uint)parameters[1];
-            coordinate = (Coordinate)parameters[2];
+            blueprintTable = (string)parameters[1];
+            entityCreatedId = (uint)parameters[2];
+            origin = (Point)parameters[3];
+            end = (Point)parameters[4];
         }
 
         public void Reset()
         {
-            blueprintId = string.Empty;
+            blueprintId = default(string);
+            blueprintTable = default(string);
             entityCreatedId = Entity.UNASSIGNED_ENTITY_ID;
-            coordinate = default(Coordinate);
+            origin = default(Point);
+            end = default(Point);
         }
     }
 }

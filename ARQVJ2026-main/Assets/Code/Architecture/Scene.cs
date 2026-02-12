@@ -20,8 +20,10 @@ namespace ZooArchitect.Architecture
 
         private Wallet Wallet => ServiceProvider.Instance.GetService<Wallet>();
 
-        private SpawnEntityControllerArchitecture spawnEntityControllerArchitecture;
-        private TerrainModifierControllerArchitecture TerrainModifierControllerArchitecture;
+        private SpawnAnimalControllerArchitecture spawnAnmalControllerArchitecture;
+        private TerrainModifierControllerArchitecture terrainModifierControllerArchitecture;
+        private SpawnJailControllerArchitecture spawnJailControllerArchitecture;
+        private SpawnInfrastructureControllerArchitecture spawnInfrastructureControllerArchitecture;
 
         private Map map;
 
@@ -40,8 +42,10 @@ namespace ZooArchitect.Architecture
         {
             map = new Map(100, 100);
             EventBus.Subscribe<ModifyTerrainRecuestAceptedEvent>(OnModifyTerrainRequestAcepted);
-            spawnEntityControllerArchitecture = new SpawnEntityControllerArchitecture();
-            TerrainModifierControllerArchitecture = new TerrainModifierControllerArchitecture();
+            spawnAnmalControllerArchitecture = new SpawnAnimalControllerArchitecture();
+            terrainModifierControllerArchitecture = new TerrainModifierControllerArchitecture();
+            spawnJailControllerArchitecture = new SpawnJailControllerArchitecture();
+            spawnInfrastructureControllerArchitecture = new SpawnInfrastructureControllerArchitecture();
         }
 
         public void Tick(float deltaTime)
@@ -53,7 +57,10 @@ namespace ZooArchitect.Architecture
         {
             EventBus.Unsubscribe<ModifyTerrainRecuestAceptedEvent>(OnModifyTerrainRequestAcepted);
 
-            spawnEntityControllerArchitecture.Dispose();
+            spawnAnmalControllerArchitecture.Dispose();
+            terrainModifierControllerArchitecture.Dispose();
+            spawnJailControllerArchitecture.Dispose();
+            spawnInfrastructureControllerArchitecture.Dispose();
             EntitiesLogic.Dispose();
             Wallet.Dispose();
         }
@@ -73,6 +80,7 @@ namespace ZooArchitect.Architecture
                 {
                     output.Remove(uniqueTileDefinition);
                 }
+                
             }
             else
             {
@@ -85,9 +93,11 @@ namespace ZooArchitect.Architecture
                 }
             }
 
+            output.Remove(map.HabitatTileDefinition);
+            output.Remove(map.HabitatWallTileDefinition);
+
             return output;
         }
-
 
         private void OnModifyTerrainRequestAcepted(in ModifyTerrainRecuestAceptedEvent modifyTerrainRecuestAceptedEvent)
         {
@@ -99,5 +109,8 @@ namespace ZooArchitect.Architecture
                 }
             }
         }
+
+        public string HabitatTileDefinition => map.HabitatTileDefinition;
+        public string HabitatWallTileDefinition => map.HabitatWallTileDefinition;
     }
 }

@@ -1,13 +1,15 @@
 ﻿using ImageCampus.ToolBox.Services;
 using System;
 using System.Collections.Generic;
+using ZooArchitect.Architecture.Controllers;
 using ZooArchitect.Architecture.Controllers.Events;
 using ZooArchitect.Architecture.Math;
-
+using ZooArchitect.View.Mapping;
 using LogicScene = ZooArchitect.Architecture.Scene;
 
 namespace ZooArchitect.View.Controller
 {
+    [ViewOf(typeof(TerrainModifierControllerArchitecture))]
     internal sealed class TerrainModifierControllerView : GroupSelectionControllerView
     {
         private LogicScene Scene => ServiceProvider.Instance.GetService<LogicScene>();

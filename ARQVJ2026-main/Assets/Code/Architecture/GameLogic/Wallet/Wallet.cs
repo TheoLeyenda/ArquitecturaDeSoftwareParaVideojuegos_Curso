@@ -1,7 +1,9 @@
-﻿using ImageCampus.ToolBox.Events;
+﻿using ImageCampus.ToolBox.Blueprints;
+using ImageCampus.ToolBox.Events;
 using ImageCampus.ToolBox.Services;
 using System;
 using System.Collections.Generic;
+using ZooArchitect.Architecture.Data;
 using ZooArchitect.Architecture.GameLogic.Events;
 
 namespace ZooArchitect.Architecture.GameLogic
@@ -9,6 +11,10 @@ namespace ZooArchitect.Architecture.GameLogic
     public sealed class Wallet : IService, IDisposable
     {
         private EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
+
+        private BlueprintRegistry BlueprintRegistry => ServiceProvider.Instance.GetService<BlueprintRegistry>();
+
+        private BlueprintBinder BlueprintBinder => ServiceProvider.Instance.GetService<BlueprintBinder>();
 
         public bool IsPersistance => false;
 
@@ -21,17 +27,11 @@ namespace ZooArchitect.Architecture.GameLogic
 
             resources = new Dictionary<string, Resource>();
 
-            CreateResource(new Resource("Plata", 0, long.MaxValue, 1000));
-            CreateResource(new Resource("Comida de Animales", 0, long.MaxValue, 50));
-            CreateResource(new Resource("Comida de Visitantes", 0, long.MaxValue, 50));
-            CreateResource(new Resource("Limpieza", 0, 100, 100));
-            CreateResource(new Resource("Reputación", 0, long.MaxValue, 800));
-            CreateResource(new Resource("Trabajadores", 0, 500, 3));
-            CreateResource(new Resource("Animales", 0, 500, 0));
-
-            void CreateResource(Resource resource)
-            {
-                resources.Add(resource.Name, resource);
+			foreach (string resourceBlueprint in BlueprintRegistry.BlueprintsOf(TableNames.RESOURCES_TABLE_NAME))
+			{
+                object newResource = new Resource();
+                BlueprintBinder.Apply(ref newResource, TableNames.RESOURCES_TABLE_NAME, resourceBlueprint);
+                resources.Add(((Resource)newResource).Name, (Resource)newResource);
             }
         }
 

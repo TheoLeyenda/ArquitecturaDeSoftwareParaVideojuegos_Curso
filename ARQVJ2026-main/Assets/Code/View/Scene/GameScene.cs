@@ -16,6 +16,16 @@ namespace ZooArchitect.View.Scene
         public const int MAP_DRAWING_ORDER = 0;
         public const int ENTITIES_DRAWING_ORDER = 1;
 
+        private const string MAP_CONTAINER_NAME = "Map container";
+        private const string ENTITIES_CINTAINER_NAME = "Entities container";
+        private const string CAMERA_NAME = "Main Game Camera";
+        private const string MAP_NAME = "Map";
+        private const string CONTECT_MENU_VIEW_NAME = "ContextMenu";
+
+        private const string CAMERA_PREFAB_NAME = "GameCamera";
+        private const string CONTEXT_MENU_PREFAB_NAME = "ContextMenuContainer";
+        private const string CONTEXT_MENU_BUTTON_PREFAB_NAME = "ButtonPrefab";
+
         private PrefabsRegistryView PrefabsRegistryView => ServiceProvider.Instance.GetService<PrefabsRegistryView>();
         private ContextMenuView ContextMenuView => ServiceProvider.Instance.GetService<ContextMenuView>();
 
@@ -39,12 +49,12 @@ namespace ZooArchitect.View.Scene
             ServiceProvider.Instance.AddService<EntityRegistryView>(new EntityRegistryView());
             entityFactoryView = new EntityFactoryView();
 
-            mapContainer = GameScene.AddSceneComponent<Container>("Map container", this.transform);
+            mapContainer = GameScene.AddSceneComponent<Container>(MAP_CONTAINER_NAME, this.transform);
             mapContainer.Init();
-            entitiesContainer = GameScene.AddSceneComponent<Container>("Entities container", this.transform);
+            entitiesContainer = GameScene.AddSceneComponent<Container>(ENTITIES_CINTAINER_NAME, this.transform);
             entitiesContainer.Init();
 
-            mapView = GameScene.AddSceneComponent<MapView>("Map", MapContainer.transform);
+            mapView = GameScene.AddSceneComponent<MapView>(MAP_NAME, MapContainer.transform);
             mapView.Init();
 
             entitiesLogicView = new EntitiesLogicView();
@@ -56,16 +66,16 @@ namespace ZooArchitect.View.Scene
             base.Init(parameters);
             Canvas canvasView = parameters[0] as Canvas;
 
-            GameObject contextMenuPrefab = PrefabsRegistryView.Get(TableNamesView.UI_VIEW_TABLE_NAME, "ContextMenuContainer");
-            GameObject buttonMenuPrefab = PrefabsRegistryView.Get(TableNamesView.UI_VIEW_TABLE_NAME, "ButtonPrefab");
+            GameObject contextMenuPrefab = PrefabsRegistryView.Get(TableNamesView.UI_VIEW_TABLE_NAME, CONTEXT_MENU_PREFAB_NAME);
+            GameObject buttonMenuPrefab = PrefabsRegistryView.Get(TableNamesView.UI_VIEW_TABLE_NAME, CONTEXT_MENU_BUTTON_PREFAB_NAME);
 
-            ContextMenuView contextMenuView = GameScene.AddSceneComponent<ContextMenuView>("ContextMenu", canvasView.transform, contextMenuPrefab);
+            ContextMenuView contextMenuView = GameScene.AddSceneComponent<ContextMenuView>(CONTECT_MENU_VIEW_NAME, canvasView.transform, contextMenuPrefab);
             ServiceProvider.Instance.AddService<ContextMenuView>(contextMenuView);
             contextMenuView.Init(contextMenuPrefab, buttonMenuPrefab, canvasView);
 
-            GameObject cameraPrefab = PrefabsRegistryView.Get(TableNamesView.CAMERA_VIEW_TABLE_NAME, "GameCamera");
+            GameObject cameraPrefab = PrefabsRegistryView.Get(TableNamesView.CAMERA_VIEW_TABLE_NAME, CAMERA_PREFAB_NAME);
 
-            cameraView = GameScene.AddSceneComponent<CameraView>("Main Game Camera", null, cameraPrefab);
+            cameraView = GameScene.AddSceneComponent<CameraView>(CAMERA_NAME, null, cameraPrefab);
             cameraView.Init(cameraView.GetComponent<Camera>());
 
         }
@@ -97,6 +107,11 @@ namespace ZooArchitect.View.Scene
         public Vector3 CoordinateToWorld(Coordinate coordinate)
         {
             return mapView.CoordinateToGrid(coordinate);
+        }
+
+        public Vector3 PointToWorld(Point point) 
+        {
+            return mapView.PointToGrid(point);
         }
 
         public Point GetMouseGridCoordinate()
@@ -134,7 +149,29 @@ namespace ZooArchitect.View.Scene
             newSceneObject.name = name;
             if (parent != null)
                 newSceneObject.transform.parent = parent;
-            return newSceneObject.AddComponent(viewComponentType) as ViewComponent;
+
+            ViewComponent viewComponent = newSceneObject.AddComponent(viewComponentType) as ViewComponent;
+            Container container = GetContainer(viewComponent);
+
+            if (container != null)
+                container.Register(newSceneObject);
+
+            return viewComponent;
+        }
+
+        public static Container GetContainer(ViewComponent component)
+        {
+            Transform parent = component.transform.parent;
+
+            while (parent != null)
+            {
+                if (parent.gameObject.TryGetComponent(out Container container))
+                    return container;
+                else
+                    parent = parent.parent;
+            }
+
+            return null;
         }
     }
 }

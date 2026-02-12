@@ -3,21 +3,21 @@ using ZooArchitect.Architecture.Math;
 
 namespace ZooArchitect.Architecture.Controllers.Events
 {
-    public struct SpawnEntityRequestAceptedEvent : IEvent
+    public struct SpawnInfrastructureRequestAcceptedEvent : IEvent
     {
         public string blueprintToSpawn;
-        public Coordinate coordinateToSpawn;
+        public Point pointToSpawn;
 
         public void Assign(params object[] parameters)
         {
             blueprintToSpawn = (string)parameters[0];
-            coordinateToSpawn = (Coordinate)parameters[1];
+            pointToSpawn = (Point)parameters[1];
         }
 
         public void Reset()
         {
             blueprintToSpawn = string.Empty;
-            coordinateToSpawn = default(Coordinate);
+            pointToSpawn = default(Point);
         }
     }
 }

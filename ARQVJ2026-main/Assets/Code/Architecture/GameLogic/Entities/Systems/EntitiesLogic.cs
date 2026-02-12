@@ -50,12 +50,25 @@ namespace ZooArchitect.Architecture.Entities
             EventBus.Unsubscribe<DayChangeEvent>(OnDayChange);
         }
 
-        public List<string> ValidEntitiesToSpawnIn(Coordinate coordinate) 
+        public List<string> ValidAnimalsToSpawnIn(Point point)
         {
-            if (Scene.IsCoordinateInsideMap(coordinate)) 
+            if (Scene.IsCoordinateInsideMap(new Coordinate(point)))
                 return BlueprintRegistry.BlueprintsOf(TableNames.ANIMALS_TABLE_NAME);
             return new List<string>();
         }
+
+        public List<string> ValidInfrastructuresToSpawnIn(Point point)
+        {
+            if (Scene.IsCoordinateInsideMap(new Coordinate(point)))
+                return BlueprintRegistry.BlueprintsOf(TableNames.INFTRASTRUCTURE_TABLE_NAME);
+            return new List<string>();
+        }
+
+        public string GetJailBlueprint()
+        {
+            return BlueprintRegistry.BlueprintsOf(TableNames.JAILS_TABLE_NAME)[0];
+        }
+
     }
 
 }

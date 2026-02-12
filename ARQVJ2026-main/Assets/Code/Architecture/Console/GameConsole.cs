@@ -21,7 +21,6 @@ namespace ZooArchitect.Architecture.Logs
         public static void Error(string message)
         {
             EventBus.Raise<ConsoleErrorEvent>(message);
-
         }
     }
 }
