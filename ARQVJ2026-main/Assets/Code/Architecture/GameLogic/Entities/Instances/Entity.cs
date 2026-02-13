@@ -1,6 +1,7 @@
 ﻿using ImageCampus.ToolBox.Blueprints;
 using ImageCampus.ToolBox.Dataflow;
 using ImageCampus.ToolBox.Events;
+using ImageCampus.ToolBox.Rules;
 using ImageCampus.ToolBox.Services;
 using ZooArchitect.Architecture.Entities.Events;
 using ZooArchitect.Architecture.Math;
@@ -11,6 +12,7 @@ namespace ZooArchitect.Architecture.Entities
     {
         public const uint UNASSIGNED_ENTITY_ID = 0;
 
+        protected RuleFactory RuleFactory => ServiceProvider.Instance.GetService<RuleFactory>();
         protected EventBus EventBus => ServiceProvider.Instance.GetService<EventBus>();
 
         public uint ID;

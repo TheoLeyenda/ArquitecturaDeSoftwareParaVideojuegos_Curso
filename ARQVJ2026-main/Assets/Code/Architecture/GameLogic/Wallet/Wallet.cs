@@ -18,12 +18,13 @@ namespace ZooArchitect.Architecture.GameLogic
 
         public bool IsPersistance => false;
 
+
         private readonly Dictionary<string, Resource> resources;
 
         public Wallet()
         {
             EventBus.Subscribe<AddResourceToWlletEvent>(AddResource);
-            EventBus.Subscribe<RemoveResourceToWlletEvent>(RemoveResource);
+            EventBus.Subscribe<RemoveResourceToWalletEvent>(RemoveResource);
 
             resources = new Dictionary<string, Resource>();
 
@@ -40,7 +41,7 @@ namespace ZooArchitect.Architecture.GameLogic
             resources[addResourceToWlletEvent.resourceName].AddResource(addResourceToWlletEvent.amount);
         }
 
-        private void RemoveResource(in RemoveResourceToWlletEvent removeResourceToWlletEvent)
+        private void RemoveResource(in RemoveResourceToWalletEvent removeResourceToWlletEvent)
         {
             resources[removeResourceToWlletEvent.resourceName].RemoveResource(removeResourceToWlletEvent.amount);
         }
@@ -50,10 +51,17 @@ namespace ZooArchitect.Architecture.GameLogic
             return resources[resource].CurrentValue >= amount;
         }
 
+        public long GetResourceAmount(string resource) 
+        {
+            return resources[resource].CurrentValue;
+        }
+
         public void Dispose()
         {
             EventBus.Unsubscribe<AddResourceToWlletEvent>(AddResource);
-            EventBus.Unsubscribe<RemoveResourceToWlletEvent>(RemoveResource);
+            EventBus.Unsubscribe<RemoveResourceToWalletEvent>(RemoveResource);
         }
+
     }
+
 }

@@ -1,15 +1,20 @@
 ﻿using ImageCampus.ToolBox.Blueprints;
+using ImageCampus.ToolBox.Rules;
 using ImageCampus.ToolBox.Services;
+using ZooArchitect.Architecture.Entities.Events;
 using ZooArchitect.Architecture.GameLogic;
 using ZooArchitect.Architecture.GameLogic.Events;
 using ZooArchitect.Architecture.Math;
-using ZooArchitect.Architecture.Entities.Events;
 
 namespace ZooArchitect.Architecture.Entities
 {
     public sealed class Animal : LivingEntity
     {
         private Wallet Wallet => ServiceProvider.Instance.GetService<Wallet>();
+
+        [BlueprintParameter("Can be feeded rule")] private string canAnimalBeFeededRuleName;
+
+        private Rule canAnimalBeFeeded;
 
         [BlueprintParameter("Food needed per day")] private int foodNeededPerDay;
         public int FoodNeededPerDay => foodNeededPerDay;
@@ -34,21 +39,31 @@ namespace ZooArchitect.Architecture.Entities
 
         }
 
+        public override void LateInit()
+        {
+            canAnimalBeFeeded = RuleFactory.GetRule(canAnimalBeFeededRuleName);
+            base.LateInit();
+        }
+
         public override void Tick(float deltaTime)
         {
+            
         }
 
         internal void Feed()
         {
-            if (Wallet.HasResourceAmount("Comida de Animales", foodNeededPerDay))
+            //if (Wallet.HasResourceAmount("Comida de Animales", foodNeededPerDay))
+
+            if (canAnimalBeFeeded.Evaluate())
             {
-                EventBus.Raise<RemoveResourceToWlletEvent>("Comida de Animales", foodNeededPerDay);
+                EventBus.Raise<RemoveResourceToWalletEvent>("Comida de Animales", foodNeededPerDay);
                 EventBus.Raise<OnAnimalFeedSucsess>(ID);
             }
             else
             {
                 EventBus.Raise<OnAnimalFeedFail>(ID);
             }
+
         }
     }
 }

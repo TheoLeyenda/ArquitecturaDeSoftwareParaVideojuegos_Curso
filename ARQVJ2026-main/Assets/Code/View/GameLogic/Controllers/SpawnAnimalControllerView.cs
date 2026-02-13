@@ -39,7 +39,9 @@ namespace ZooArchitect.View.Controller
 
         private void OnSpawnRejected(in SpawnAnimalRequestRejectedEvent spawnEntityRequestRejectedEvent)
         {
-            GameConsole.Warning($"Spawn of {spawnEntityRequestRejectedEvent.blueprintToSpawn} in {spawnEntityRequestRejectedEvent.pointToSpawn} rejected");
+            GameConsole.Warning($"Spawn of {spawnEntityRequestRejectedEvent.blueprintToSpawn} in {spawnEntityRequestRejectedEvent.pointToSpawn} rejected" +
+               (string.IsNullOrEmpty(spawnEntityRequestRejectedEvent.message) ? string.Empty : "\n" + spawnEntityRequestRejectedEvent.message));
+
         }
 
         public override void Dispose()

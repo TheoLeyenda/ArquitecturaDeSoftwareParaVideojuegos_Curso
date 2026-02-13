@@ -2,15 +2,17 @@
 
 namespace ZooArchitect.Architecture.GameLogic
 {
-	public struct Resource
+	public sealed class Resource
 	{
 		[BlueprintParameter("Name")] private string name;
 		[BlueprintParameter("Min posible value")] private long minValue;
 		[BlueprintParameter("Max posible value")] private long maxValue;
-		[BlueprintParameter("Start amount")] private long currentValue;
+		[BlueprintParameter("Current value")] private long currentValue;
 
 		public string Name => name;
 		public long CurrentValue => currentValue;
+
+		public Resource() { }
 
 		public Resource(string name, long minValue, long maxValue, long startValue)
 		{

@@ -2,7 +2,7 @@
 
 namespace ZooArchitect.Architecture.GameLogic.Events
 {
-    public struct RemoveResourceToWlletEvent : IEvent
+    public struct RemoveResourceToWalletEvent : IEvent
     {
         public string resourceName;
         public long amount;

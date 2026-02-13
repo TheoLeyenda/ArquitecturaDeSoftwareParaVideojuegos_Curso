@@ -1,6 +1,7 @@
 using ImageCampus.ToolBox.Blueprints;
 using ImageCampus.ToolBox.Dataflow;
 using ImageCampus.ToolBox.Events;
+using ImageCampus.ToolBox.Rules;
 using ImageCampus.ToolBox.Scheduling;
 using ImageCampus.ToolBox.Services;
 using System;
@@ -21,6 +22,8 @@ namespace ZooArchitect.Architecture
             ServiceProvider.Instance.AddService<BlueprintRegistry>(new BlueprintRegistry(blueprintsPath));
             ServiceProvider.Instance.AddService<BlueprintBinder>(new BlueprintBinder());
             ServiceProvider.Instance.AddService<TaskScheduler>(new TaskScheduler());
+            ServiceProvider.Instance.AddService<RuleEvaluator>(new RuleEvaluator());
+            ServiceProvider.Instance.AddService<RuleFactory>(new RuleFactory());
             ServiceProvider.Instance.AddService<Scene>(new Scene());
         }
 
